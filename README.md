@@ -38,8 +38,8 @@ This system addresses the challenge of ambiguous search queries (like "Jackson",
 
 1. **Clone the repository:**
 ```bash
-git clone <repository-url>
-cd search-disambiguation-system
+git clone github.com/samasthtc/Dynamic-Search-Result-Disambiguation-and-Clustering-System.git
+cd Dynamic-Search-Result-Disambiguation-and-Clustering-System
 ```
 
 2. **Create virtual environment:**
