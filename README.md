@@ -1,3 +1,14 @@
+## 🎥 Demo Video
+
+[Click here to watch the demo video](https://drive.google.com/file/d/13DdEyA-_d_pSXzNqEDShe2tM3QxAgq6n/view?usp=sharing)
+
+<!-- If the preview below does not load, use the link above -->
+<p align="center">
+  <a href="https://drive.google.com/file/d/13DdEyA-_d_pSXzNqEDShe2tM3QxAgq6n/view?usp=sharing" target="_blank">
+    <img src="https://drive.google.com/thumbnail?id=13DdEyA-_d_pSXzNqEDShe2tM3QxAgq6n" alt="Demo Video" width="480"/>
+  </a>
+</p>
+
 # Dynamic Search Result Disambiguation and Clustering System
 
 A comprehensive implementation of the research project "Dynamic Search Result Disambiguation and Clustering via Reinforcement Learning" with advanced machine learning capabilities and support for both English and Arabic queries.
@@ -5,6 +16,7 @@ A comprehensive implementation of the research project "Dynamic Search Result Di
 ## 🎯 Project Overview
 
 This system addresses the challenge of ambiguous search queries (like "Jackson", "Apple", "Python") by:
+
 - **Dynamic Clustering**: Multiple algorithms (K-Means, HDBSCAN, BERTopic, etc.)
 - **Reinforcement Learning**: Q-learning agent that adapts clustering based on user feedback
 - **Multilingual Support**: Advanced Arabic text processing with morphological analysis
@@ -29,6 +41,7 @@ This system addresses the challenge of ambiguous search queries (like "Jackson",
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Python 3.8 or higher
 - Node.js (optional, for advanced frontend features)
 - 4GB+ RAM recommended
@@ -37,23 +50,27 @@ This system addresses the challenge of ambiguous search queries (like "Jackson",
 ### Installation
 
 1. **Clone the repository:**
+
 ```bash
 git clone github.com/samasthtc/Dynamic-Search-Result-Disambiguation-and-Clustering-System.git
 cd Dynamic-Search-Result-Disambiguation-and-Clustering-System
 ```
 
 2. **Create virtual environment:**
+
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 3. **Install dependencies:**
+
 ```bash
 pip install -r requirements.txt
 ```
 
 4. **Download required models:**
+
 ```bash
 python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
 ```
@@ -61,11 +78,13 @@ python -c "from sentence_transformers import SentenceTransformer; SentenceTransf
 ### Running the System
 
 1. **Start the Flask backend:**
+
 ```bash
 python app.py
 ```
 
 2. **Open the frontend:**
+
    - Navigate to `http://localhost:5000` in your web browser
    - The system will automatically serve the HTML interface
 
@@ -100,12 +119,14 @@ search-disambiguation-system/
 ## 🔧 Key Components
 
 ### 1. Reinforcement Learning Agent (`rl_agent.py`)
+
 - **Q-Learning Algorithm**: Adapts clustering strategies based on user feedback
 - **Experience Replay**: Improves learning stability and efficiency
 - **Action Space**: 6 different clustering optimization actions
 - **State Representation**: Comprehensive clustering and feedback features
 
 ### 2. Search Simulator Package (`search_simulator/`)
+
 - **Main Module** (`search_simulator.py`): Core SearchSimulator class with clean API
 - **Data Templates** (`data_templates.py`): Predefined ambiguous query data and configurations
 - **Result Generator** (`result_generator.py`): Realistic search result creation from templates
@@ -114,30 +135,35 @@ search-disambiguation-system/
 - **Arabic Support** (`arabic_support.py`): Arabic language processing with cultural context
 
 ### 3. Clustering Algorithms Manager (`clustering_algorithms.py`)
+
 - **Multiple Algorithms**: K-Means, HDBSCAN, DBSCAN, BERTopic, Gaussian Mixture, Hierarchical
 - **Adaptive Selection**: Automatically chooses best algorithm based on data characteristics
 - **Ensemble Clustering**: Combines multiple algorithms for improved results
 - **Parameter Optimization**: Auto-tunes parameters for optimal performance
 
 ### 4. Arabic Text Processor (`arabic_processor.py`)
+
 - **Multiple Algorithms**: K-Means, HDBSCAN, DBSCAN, BERTopic, Gaussian Mixture, Hierarchical
 - **Adaptive Selection**: Automatically chooses best algorithm based on data characteristics
 - **Ensemble Clustering**: Combines multiple algorithms for improved results
 - **Parameter Optimization**: Auto-tunes parameters for optimal performance
 
 ### 3. Arabic Text Processor (`arabic_processor.py`)
+
 - **Morphological Analysis**: Handles Arabic root extraction and pattern matching
 - **Orthographic Normalization**: Standardizes Arabic character variants
 - **Ambiguity Detection**: Identifies and handles semantically ambiguous terms
 - **Query Expansion**: Generates morphological and semantic variants
 
 ### 4. Search Result Simulator (`search_simulator.py`)
+
 - **Realistic Data Generation**: Creates diverse, ambiguous search results
 - **Multiple Query Types**: Supports various ambiguity patterns
 - **User Behavior Simulation**: Models realistic interaction patterns
 - **Multilingual Support**: Generates Arabic and English results
 
 ### 5. Evaluation Metrics Calculator (`evaluation_metrics.py`)
+
 - **Comprehensive Metrics**: Cluster purity, silhouette score, ARI, NMI, and more
 - **Search-Specific Measures**: Result coverage, cluster balance, topic coherence
 - **Performance Tracking**: Historical metric trends and quality reports
@@ -167,16 +193,19 @@ behavior = simulate_user(results, "researcher")
 ### Advanced Features
 
 #### Clustering Control
+
 - **Algorithm Selection**: Choose from 7 different clustering algorithms
 - **Parameter Tuning**: Adjust number of clusters and other parameters
 - **Ensemble Mode**: Combine multiple algorithms for better results
 
 #### Arabic Support
+
 - **Language Toggle**: Switch between English and Arabic interfaces
 - **Morphological Processing**: Automatic handling of Arabic text complexity
 - **Cultural Context**: Arabic-specific search result generation
 
 #### Performance Monitoring
+
 - **Real-time Metrics**: Track clustering quality in real-time
 - **RL Agent Status**: Monitor learning progress and exploration rate
 - **Quality Reports**: Generate comprehensive performance assessments
@@ -218,12 +247,12 @@ GET /api/metrics
 
 The system has been tested on various ambiguous queries with the following performance:
 
-| Metric | Score | Description |
-|--------|-------|-------------|
-| Cluster Purity | 0.85+ | High homogeneity within clusters |
+| Metric              | Score | Description                      |
+| ------------------- | ----- | -------------------------------- |
+| Cluster Purity      | 0.85+ | High homogeneity within clusters |
 | Adjusted Rand Index | 0.72+ | Good agreement with ground truth |
-| Silhouette Score | 0.68+ | Well-separated clusters |
-| User Satisfaction | 78%+ | Based on feedback analysis |
+| Silhouette Score    | 0.68+ | Well-separated clusters          |
+| User Satisfaction   | 78%+  | Based on feedback analysis       |
 
 ### Supported Query Types
 
@@ -308,6 +337,7 @@ pytest tests/ --cov=. --cov-report=html
 ## 🚀 Deployment
 
 ### Local Development
+
 ```bash
 python app.py
 ```
@@ -315,6 +345,7 @@ python app.py
 ### Production Deployment
 
 1. **Docker Deployment:**
+
 ```bash
 # Build container
 docker build -t search-disambiguation .
@@ -360,7 +391,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👥 Authors
 
 - **Joud Hijaz** - Birzeit University
-- **Mohammad AbuSaleh** - Birzeit University  
+- **Mohammad AbuSaleh** - Birzeit University
 - **Shatha Khdair** - Birzeit University
 - **Usama Shoora** - Birzeit University
 
@@ -373,6 +404,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For questions, issues, or contributions:
+
 - Email: {1200342, 1203331, 1200525, 1200796}@student.birzeit.edu
 - Create an issue on GitHub
 - Check the documentation wiki
