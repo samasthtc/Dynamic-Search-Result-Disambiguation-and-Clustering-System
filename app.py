@@ -23,7 +23,7 @@ from bidi.algorithm import get_display
 # Custom imports for our components
 from rl_agent import ReinforcementLearningAgent
 from clustering_algorithms import ClusteringManager
-from search_simulator import SearchSimulator
+from search_simulator.search_simulator import SearchSimulator
 from evaluation_metrics import MetricsCalculator
 from arabic_processor import ArabicTextProcessor
 
@@ -96,25 +96,57 @@ class SearchDisambiguationSystem:
         # Use search simulator to generate realistic results
         results = self.search_simulator.simulate_search(query, language, num_results)
         
-        # Generate embeddings for results
-        texts = [f"{result['title']} {result['snippet']}" for result in results]
-        embeddings = self.generate_embeddings(texts, language)
+        # The new simulator already includes embeddings and metadata,
+        # but we need to ensure compatibility with the expected format
+        enhanced_results = []
+        for result in results:
+            # Convert to expected format if needed
+            enhanced_result = {
+                'id': result.get('id', len(enhanced_results)),
+                'title': result['title'],
+                'snippet': result['snippet'],
+                'url': result['url'],
+                'category': result.get('category', 'general'),
+                'domain': result.get('domain', 'unknown'),
+                'relevance_score': result.get('final_score', 0.5),
+                'embedding': self._generate_or_extract_embedding(result),
+                'language': result.get('language', language),
+                'authority_score': result.get('authority_score', 0.5),
+                'freshness_score': result.get('freshness_score', 0.5),
+                'social_signals': result.get('social_signals', {}),
+                'technical_score': result.get('technical_score', 0.5),
+                'publish_date': result.get('publish_date', '2023-01-01'),
+                'content_type': result.get('content_type', 'general')
+            }
+            enhanced_results.append(enhanced_result)
         
-        # Add embeddings to results
-        for i, result in enumerate(results):
-            result['embedding'] = embeddings[i].tolist()
-            result['relevance_score'] = np.random.uniform(0.3, 1.0)  # Simulated relevance
-        
-        self.current_results = results
+        self.current_results = enhanced_results
         self.query_history.append({
             'query': query,
             'language': language,
             'timestamp': datetime.now().isoformat(),
-            'num_results': len(results)
+            'num_results': len(enhanced_results)
         })
         
         self.system_metrics['total_queries'] += 1
-        return results
+        return enhanced_results
+
+    def _generate_or_extract_embedding(self, result: Dict) -> List[float]:
+        """Generate or extract embedding for a result"""
+        # Check if embedding already exists
+        if 'embedding' in result and result['embedding']:
+            return result['embedding']
+        
+        # Generate embedding from title and snippet
+        text = f"{result['title']} {result['snippet']}"
+        if result.get('language') == 'ar':
+            # Process Arabic text
+            processed_text = self.arabic_processor.preprocess_text(text)
+            embedding = self.sentence_model.encode(processed_text)
+        else:
+            embedding = self.sentence_model.encode(text)
+        
+        return embedding.tolist()
 
     def perform_clustering(self, algorithm: str = 'kmeans', num_clusters: int = 4, 
                           min_cluster_size: int = 2) -> List[Dict]:

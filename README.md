@@ -78,16 +78,23 @@ python app.py
 
 ```
 search-disambiguation-system/
-├── app.py                      # Main Flask application
-├── rl_agent.py                 # Reinforcement Learning Agent
-├── clustering_algorithms.py    # Clustering Manager
-├── search_simulator.py         # Search Result Simulator
-├── evaluation_metrics.py       # Metrics Calculator
-├── arabic_processor.py         # Arabic Text Processor
-├── index.html                  # Frontend Interface
-├── requirements.txt            # Python Dependencies
-├── README.md                   # This file
-└── static/                     # Static files (if needed)
+├── app.py                              # Main Flask application
+├── rl_agent.py                         # Reinforcement Learning Agent
+├── clustering_algorithms.py            # Clustering Manager
+├── evaluation_metrics.py               # Metrics Calculator
+├── arabic_processor.py                 # Arabic Text Processor
+├── search_simulator/                   # Search Simulator Package
+│   ├── __init__.py                     # Package initialization
+│   ├── search_simulator.py             # Main simulator class
+│   ├── data_templates.py               # Query templates and data
+│   ├── result_generator.py             # Result generation logic
+│   ├── user_behavior.py               # User behavior modeling
+│   ├── query_analyzer.py              # Query analysis and recommendations
+│   └── arabic_support.py              # Arabic language support
+├── index.html                          # Frontend Interface
+├── requirements.txt                    # Python Dependencies
+├── README.md                           # This file
+└── static/                             # Static files (if needed)
 ```
 
 ## 🔧 Key Components
@@ -98,7 +105,21 @@ search-disambiguation-system/
 - **Action Space**: 6 different clustering optimization actions
 - **State Representation**: Comprehensive clustering and feedback features
 
-### 2. Clustering Algorithms Manager (`clustering_algorithms.py`)
+### 2. Search Simulator Package (`search_simulator/`)
+- **Main Module** (`search_simulator.py`): Core SearchSimulator class with clean API
+- **Data Templates** (`data_templates.py`): Predefined ambiguous query data and configurations
+- **Result Generator** (`result_generator.py`): Realistic search result creation from templates
+- **User Behavior** (`user_behavior.py`): Advanced user interaction simulation with pattern detection
+- **Query Analyzer** (`query_analyzer.py`): Query complexity analysis and clustering recommendations
+- **Arabic Support** (`arabic_support.py`): Arabic language processing with cultural context
+
+### 3. Clustering Algorithms Manager (`clustering_algorithms.py`)
+- **Multiple Algorithms**: K-Means, HDBSCAN, DBSCAN, BERTopic, Gaussian Mixture, Hierarchical
+- **Adaptive Selection**: Automatically chooses best algorithm based on data characteristics
+- **Ensemble Clustering**: Combines multiple algorithms for improved results
+- **Parameter Optimization**: Auto-tunes parameters for optimal performance
+
+### 4. Arabic Text Processor (`arabic_processor.py`)
 - **Multiple Algorithms**: K-Means, HDBSCAN, DBSCAN, BERTopic, Gaussian Mixture, Hierarchical
 - **Adaptive Selection**: Automatically chooses best algorithm based on data characteristics
 - **Ensemble Clustering**: Combines multiple algorithms for improved results
@@ -124,12 +145,24 @@ search-disambiguation-system/
 
 ## 🎮 Usage Guide
 
-### Basic Usage
+### Quick Import Examples
 
-1. **Enter a Query**: Type an ambiguous search term (e.g., "Jackson")
-2. **View Results**: See original search results and AI-clustered versions
-3. **Provide Feedback**: Rate individual results and entire clusters
-4. **Watch Learning**: Observe the RL agent improve over time
+```python
+# Main simulator
+from search_simulator import SearchSimulator
+simulator = SearchSimulator()
+
+# Individual components
+from search_simulator import QueryAnalyzer, UserBehaviorSimulator
+analyzer = QueryAnalyzer()
+behavior_sim = UserBehaviorSimulator()
+
+# Convenience functions
+from search_simulator import quick_search, analyze_query, simulate_user
+results = quick_search("jackson", num_results=10)
+analysis = analyze_query("python")
+behavior = simulate_user(results, "researcher")
+```
 
 ### Advanced Features
 

@@ -1,7 +1,7 @@
 # Core Dependencies
 flask==2.3.3
 flask-cors==4.0.0
-numpy==1.24.3
+# numpy==1.24.3
 pandas==2.0.3
 scikit-learn==1.3.0
 
@@ -38,3 +38,11 @@ flake8==6.0.0
 # Optional: Advanced clustering algorithms
 # faiss-cpu==1.7.4  # For large-scale similarity search
 # networkx==3.1      # For graph-based clustering
+
+# Note: The search_simulator module is now split into multiple files:
+# - search_simulator/search_simulator.py (main module)
+# - search_simulator/data_templates.py (data definitions)
+# - search_simulator/result_generator.py (result creation)
+# - search_simulator/user_behavior.py (behavioral modeling)
+# - search_simulator/query_analyzer.py (query analysis)
+# - search_simulator/arabic_support.py (Arabic language support)
