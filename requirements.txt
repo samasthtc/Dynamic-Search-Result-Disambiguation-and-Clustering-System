@@ -9,7 +9,7 @@ scikit-learn>=1.3.0
 sentence-transformers>=2.2.2
 transformers>=4.33.0
 torch>=2.0.1
-hdbscan>=0.8.33
+hdbscan==0.8.29
 bertopic>=0.15.0
 
 # Arabic Text Processing

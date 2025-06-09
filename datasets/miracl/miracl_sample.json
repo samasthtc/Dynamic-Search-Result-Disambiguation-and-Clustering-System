@@ -1,0 +1,53 @@
+{
+  "ar": [
+    {
+      "query_id": "ar_sample_1",
+      "query": "محمد صلاح",
+      "relevance_docs": {
+        "doc1": 1,
+        "doc2": 1,
+        "doc3": 0
+      }
+    },
+    {
+      "query_id": "ar_sample_2",
+      "query": "الهرم الأكبر",
+      "relevance_docs": {
+        "doc4": 1,
+        "doc5": 1,
+        "doc6": 0
+      }
+    },
+    {
+      "query_id": "ar_sample_3",
+      "query": "عين",
+      "relevance_docs": {
+        "doc7": 1,
+        "doc8": 1,
+        "doc9": 0,
+        "doc10": 0
+      }
+    }
+  ],
+  "en": [
+    {
+      "query_id": "en_sample_1",
+      "query": "python programming",
+      "relevance_docs": {
+        "doc11": 1,
+        "doc12": 1,
+        "doc13": 0
+      }
+    },
+    {
+      "query_id": "en_sample_2",
+      "query": "apple",
+      "relevance_docs": {
+        "doc14": 1,
+        "doc15": 1,
+        "doc16": 0,
+        "doc17": 0
+      }
+    }
+  ]
+}

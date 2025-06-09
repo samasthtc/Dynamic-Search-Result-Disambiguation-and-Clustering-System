@@ -1,0 +1,211 @@
+{
+  "query_history": [
+    {
+      "query": "test",
+      "language": "en",
+      "timestamp": "2025-06-10T00:01:35.876394",
+      "num_results": 1,
+      "sources": [
+        "arxiv_api"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-10T00:01:42.100934",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-10T00:01:42.677861",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-10T00:01:55.740787",
+      "num_results": 8,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-10T00:01:56.156349",
+      "num_results": 8,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "en",
+      "timestamp": "2025-06-10T00:02:19.539935",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-10T00:02:25.798529",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "en",
+      "timestamp": "2025-06-10T00:02:58.545846",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-10T00:03:11.369162",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-10T00:03:17.626775",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-10T00:03:23.788729",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-10T00:03:28.823752",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-10T00:03:29.335266",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Mercury",
+      "language": "en",
+      "timestamp": "2025-06-10T00:03:34.493555",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Mercury",
+      "language": "en",
+      "timestamp": "2025-06-10T00:03:34.839792",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Mercury",
+      "language": "en",
+      "timestamp": "2025-06-10T00:03:45.489582",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Mercury",
+      "language": "en",
+      "timestamp": "2025-06-10T00:03:51.445078",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-10T00:05:09.621886",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "en",
+      "timestamp": "2025-06-10T00:05:13.179207",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "Jackson",
+      "language": "ar",
+      "timestamp": "2025-06-10T00:05:17.104906",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "Jackson",
+      "language": "ar",
+      "timestamp": "2025-06-10T00:05:17.197749",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-10T00:05:20.704884",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "nose",
+      "language": "en",
+      "timestamp": "2025-06-10T00:05:29.012672",
+      "num_results": 0,
+      "sources": []
+    }
+  ],
+  "last_search_sources": [],
+  "timestamp": "2025-06-10T00:06:35.887707"
+}

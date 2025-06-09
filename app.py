@@ -1,596 +1,836 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import numpy as np
-import pandas as pd
-from sklearn.cluster import KMeans, DBSCAN
-from sklearn.metrics import silhouette_score, adjusted_rand_score
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sentence_transformers import SentenceTransformer
-import hdbscan
+"""
+Real Search Disambiguation System - Complete Application
+Uses real datasets with Wikipedia, ArXiv, and live API data
+Version: 2.1.0
+"""
+
+import sys
+import os
 import logging
 import json
-import pickle
-from datetime import datetime
 import threading
 import time
-from collections import defaultdict
-import re
-import requests
-from typing import List, Dict, Any, Tuple
-import arabic_reshaper
-from bidi.algorithm import get_display
-import os
+from pathlib import Path
+from datetime import datetime
 
-# Custom imports for our components
-from rl_agent import ReinforcementLearningAgent
-from clustering_algorithms import ClusteringManager
-from search_simulator.search_simulator import SearchSimulator
-from evaluation_metrics import MetricsCalculator
-from arabic_processor import ArabicTextProcessor
+# Add current directory to Python path
+current_dir = Path(__file__).parent
+sys.path.insert(0, str(current_dir))
 
-# Import JSON utilities
-from json_utils import (
-    NumpyEncoder, safe_json_serialize, clean_cluster_data, 
-    clean_search_results, clean_metrics_data
+from flask import Flask, request, jsonify, send_from_directory, render_template_string
+from flask_cors import CORS
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+logger = logging.getLogger(__name__)
 
+# Global variables for system state
+search_system = None
+system_status = "initializing"
+REAL_SEARCH_AVAILABLE = False
+
+# Try to import the real search system
+try:
+    from real_search.system import RealSearchSystem
+    from real_search.json_utils import NumpyEncoder
+
+    REAL_SEARCH_AVAILABLE = True
+    logger.info("✅ Real search system imports successful")
+except ImportError as e:
+    logger.error(f"❌ Failed to import real search system: {e}")
+    logger.info("💡 Run: python setup_system.py to set up the system")
+    REAL_SEARCH_AVAILABLE = False
+    RealSearchSystem = None
+    NumpyEncoder = None
+
+# Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Configure JSON encoder for Flask
-app.json_encoder = NumpyEncoder
+# Set JSON encoder if available
+if NumpyEncoder:
+    app.json_encoder = NumpyEncoder
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
-class SearchDisambiguationSystem:
-    def __init__(self):
-        self.sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
-        self.arabic_processor = ArabicTextProcessor()
-        self.clustering_manager = ClusteringManager()
-        self.rl_agent = ReinforcementLearningAgent()
-        self.search_simulator = SearchSimulator()
-        self.metrics_calculator = MetricsCalculator()
+def initialize_search_system():
+    """Initialize the search system with error handling"""
+    global search_system, system_status
+
+    if not REAL_SEARCH_AVAILABLE:
+        system_status = "unavailable - missing real_search package"
+        logger.error("❌ Real search package not available")
+        return False
+
+    try:
+        logger.info("🚀 Initializing Real Search System...")
+        search_system = RealSearchSystem()
+
+        # Quick test to verify system works
+        logger.info("🧪 Testing system with sample query...")
+        test_results = search_system.search("test", "en", 1)
+
+        # Get system statistics
+        stats = search_system.get_dataset_info()
+        logger.info(
+            f"📊 System loaded with {stats.get('statistics', {}).get('total_results', 0)} results"
+        )
+
+        system_status = "ready"
+        logger.info("✅ Real Search System initialized successfully!")
+        return True
+
+    except Exception as e:
+        error_msg = str(e)
+        system_status = f"initialization_error - {error_msg}"
+        logger.error(f"❌ Failed to initialize search system: {error_msg}")
+        return False
+
+
+def create_fallback_html():
+    """Create fallback HTML when index.html is not available"""
+    return """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Dynamic Search Disambiguation System</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1000px; margin: 0 auto; 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 30px; border-radius: 15px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #2c3e50; margin-bottom: 10px; }
+        .status { 
+            padding: 15px; border-radius: 8px; margin: 20px 0; 
+            border-left: 4px solid;
+        }
+        .ready { 
+            background: #d4edda; color: #155724; 
+            border-left-color: #28a745; 
+        }
+        .error { 
+            background: #f8d7da; color: #721c24; 
+            border-left-color: #dc3545; 
+        }
+        .warning { 
+            background: #fff3cd; color: #856404; 
+            border-left-color: #ffc107; 
+        }
+        .search-section {
+            background: #f8f9fa; padding: 20px; 
+            border-radius: 10px; margin: 20px 0;
+        }
+        .search-form {
+            display: flex; gap: 10px; margin-bottom: 20px;
+            flex-wrap: wrap; align-items: center;
+        }
+        .search-input {
+            flex: 1; min-width: 200px; padding: 12px; 
+            border: 2px solid #e0e6ff; border-radius: 8px;
+            font-size: 16px;
+        }
+        .search-input:focus {
+            outline: none; border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .btn { 
+            background: #6366f1; color: white; 
+            padding: 12px 24px; border: none; 
+            border-radius: 8px; cursor: pointer; 
+            font-size: 16px; font-weight: 600;
+            text-decoration: none; display: inline-block;
+            transition: all 0.2s ease;
+        }
+        .btn:hover { 
+            background: #4f46e5; 
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #64748b;
+        }
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        .samples { 
+            background: #e0f2fe; padding: 20px; 
+            border-radius: 8px; margin: 20px 0; 
+        }
+        .samples h3 { margin-top: 0; color: #01579b; }
+        .sample-queries {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px; margin-top: 15px;
+        }
+        .sample-query {
+            background: white; padding: 10px; border-radius: 6px;
+            border: 1px solid #b3e5fc; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .sample-query:hover {
+            background: #f0f9ff; border-color: #0288d1;
+            transform: translateY(-1px);
+        }
+        .results-area {
+            background: #f8f9fa; padding: 20px;
+            border-radius: 10px; margin: 20px 0;
+            min-height: 200px; display: none;
+        }
+        .loading {
+            text-align: center; padding: 40px;
+            color: #6b7280;
+        }
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #6366f1;
+            border-radius: 50%; width: 30px; height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .footer {
+            text-align: center; margin-top: 30px;
+            padding-top: 20px; border-top: 1px solid #e5e7eb;
+            color: #6b7280; font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Dynamic Search Result Disambiguation</h1>
+            <p>AI-Powered Search Result Clustering with Reinforcement Learning</p>
+        </div>
         
-        # System state
-        self.current_results = []
-        self.current_clusters = []
-        self.user_feedback_history = []
-        self.query_history = []
-        self.system_metrics = {
-            'total_queries': 0,
-            'total_feedback_items': 0,
-            'avg_user_satisfaction': 0.75,
-            'rl_episodes': 0,
-            'total_reward': 0.0
+        <div class="status {{ 'ready' if status == 'ready' else 'error' if 'error' in status else 'warning' }}">
+            <strong>System Status:</strong> {{ status }}
+            {% if status == 'ready' %}
+                <br><small>✅ Real data loaded from Wikipedia and ArXiv</small>
+            {% elif 'error' in status %}
+                <br><small>❌ System needs setup. Run: python setup_system.py</small>
+            {% else %}
+                <br><small>⚠️ System initializing, please wait...</small>
+            {% endif %}
+        </div>
+        
+        {% if status == 'ready' %}
+        <div class="search-section">
+            <h3>🔍 Search & Cluster Ambiguous Queries</h3>
+            <div class="search-form">
+                <input type="text" id="searchInput" class="search-input" 
+                       placeholder="Enter ambiguous query (e.g., 'python', 'apple')..."
+                       value="python">
+                <select id="languageSelect">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                </select>
+                <button onclick="performSearch()" class="btn">🔍 Search</button>
+                <button onclick="performClustering()" class="btn btn-secondary">🎯 Cluster</button>
+            </div>
+            
+            <div id="resultsArea" class="results-area">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Search for a query to see results...</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="samples">
+            <h3>🔍 Sample Ambiguous Queries</h3>
+            <p>Try these real-world ambiguous terms that have multiple meanings:</p>
+            <div class="sample-queries">
+                <div class="sample-query" onclick="tryQuery('python')">
+                    <strong>python</strong><br>
+                    <small>Programming language vs snake</small>
+                </div>
+                <div class="sample-query" onclick="tryQuery('apple')">
+                    <strong>apple</strong><br>
+                    <small>Technology company vs fruit</small>
+                </div>
+                <div class="sample-query" onclick="tryQuery('java')">
+                    <strong>java</strong><br>
+                    <small>Programming language vs island</small>
+                </div>
+                <div class="sample-query" onclick="tryQuery('mercury')">
+                    <strong>mercury</strong><br>
+                    <small>Planet vs chemical element</small>
+                </div>
+                <div class="sample-query" onclick="tryQuery('mars')">
+                    <strong>mars</strong><br>
+                    <small>Planet vs company vs mythology</small>
+                </div>
+                <div class="sample-query" onclick="tryQuery('عين', 'ar')">
+                    <strong>عين</strong><br>
+                    <small>Eye vs spring vs spy (Arabic)</small>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: center; margin: 30px 0;">
+            <a href="/api/health" class="btn btn-secondary">📊 System Health</a>
+            <a href="/api/dataset-info" class="btn btn-secondary">📁 Dataset Info</a>
+            <a href="/api/metrics" class="btn btn-secondary">📈 Metrics</a>
+            {% if status != 'ready' %}
+            <a href="javascript:location.reload()" class="btn">🔄 Refresh</a>
+            {% endif %}
+        </div>
+        
+        <div class="footer">
+            <p>Real Dataset Search Disambiguation System v2.1.0</p>
+            <p>Using real data from Wikipedia, ArXiv, and live APIs</p>
+        </div>
+    </div>
+
+    <script>
+        function tryQuery(query, language = 'en') {
+            document.getElementById('searchInput').value = query;
+            document.getElementById('languageSelect').value = language;
+            performSearch();
         }
         
-        # Load pre-trained models if available
-        self.load_pretrained_models()
-        
-        logger.info("Search Disambiguation System initialized successfully")
-
-    def load_pretrained_models(self):
-        """Load any pre-trained models or saved state with better error handling"""
-        rl_agent_file = 'rl_agent_state.pkl'
-        
-        try:
-            # Check if file exists and has content
-            if os.path.exists(rl_agent_file) and os.path.getsize(rl_agent_file) > 0:
-                with open(rl_agent_file, 'rb') as f:
-                    loaded_agent = pickle.load(f)
-                    
-                # Validate the loaded agent
-                if hasattr(loaded_agent, 'q_table') and hasattr(loaded_agent, 'state_size'):
-                    self.rl_agent = loaded_agent
-                    logger.info("Loaded pre-trained RL agent successfully")
-                else:
-                    logger.warning("Loaded RL agent appears corrupted, using fresh agent")
-                    self._create_fresh_rl_agent()
-            else:
-                logger.info("No valid RL agent state file found, starting with fresh agent")
-                self._create_fresh_rl_agent()
-                
-        except (EOFError, pickle.UnpicklingError, AttributeError) as e:
-            logger.warning(f"Error loading RL agent state: {str(e)}")
-            logger.info("Creating fresh RL agent and removing corrupted file")
+        function performSearch() {
+            const query = document.getElementById('searchInput').value;
+            const language = document.getElementById('languageSelect').value;
+            const resultsArea = document.getElementById('resultsArea');
             
-            # Remove corrupted file
-            if os.path.exists(rl_agent_file):
-                try:
-                    os.remove(rl_agent_file)
-                    logger.info(f"Removed corrupted file: {rl_agent_file}")
-                except OSError as remove_error:
-                    logger.warning(f"Could not remove corrupted file: {remove_error}")
-            
-            self._create_fresh_rl_agent()
-            
-        except Exception as e:
-            logger.error(f"Unexpected error loading RL agent: {str(e)}")
-            self._create_fresh_rl_agent()
-
-    def _create_fresh_rl_agent(self):
-        """Create a fresh RL agent"""
-        self.rl_agent = ReinforcementLearningAgent()
-        logger.info("Created fresh RL agent")
-
-    def save_system_state(self):
-        """Save system state for persistence with better error handling"""
-        try:
-            # Save RL agent state
-            rl_agent_file = 'rl_agent_state.pkl'
-            with open(rl_agent_file, 'wb') as f:
-                pickle.dump(self.rl_agent, f)
-            logger.debug(f"Saved RL agent state to {rl_agent_file}")
-            
-            # Use safe serialization for metrics
-            clean_metrics = clean_metrics_data(self.system_metrics)
-            metrics_file = 'system_metrics.json'
-            with open(metrics_file, 'w') as f:
-                json.dump(clean_metrics, f, indent=2)
-            logger.debug(f"Saved system metrics to {metrics_file}")
-            
-        except Exception as e:
-            logger.error(f"Error saving system state: {str(e)}")
-
-    def generate_embeddings(self, texts: List[str], language: str = 'en') -> np.ndarray:
-        """Generate semantic embeddings for text content"""
-        if language == 'ar':
-            # Process Arabic text
-            processed_texts = [self.arabic_processor.preprocess_text(text) for text in texts]
-            embeddings = self.sentence_model.encode(processed_texts)
-        else:
-            embeddings = self.sentence_model.encode(texts)
-        
-        return embeddings
-
-    def perform_search(self, query: str, language: str = 'en', num_results: int = 20) -> List[Dict]:
-        """Simulate search results for a given query"""
-        logger.info(f"Performing search for query: '{query}' in language: {language}")
-        
-        try:
-            # Use search simulator to generate realistic results
-            results = self.search_simulator.simulate_search(query, language, num_results)
-            
-            # The new simulator already includes embeddings and metadata,
-            # but we need to ensure compatibility with the expected format
-            enhanced_results = []
-            for result in results:
-                # Convert to expected format if needed
-                enhanced_result = {
-                    'id': result.get('id', len(enhanced_results)),
-                    'title': result['title'],
-                    'snippet': result['snippet'],
-                    'url': result['url'],
-                    'category': result.get('category', 'general'),
-                    'domain': result.get('domain', 'unknown'),
-                    'relevance_score': result.get('final_score', 0.5),
-                    'embedding': self._generate_or_extract_embedding(result),
-                    'language': result.get('language', language),
-                    'authority_score': result.get('authority_score', 0.5),
-                    'freshness_score': result.get('freshness_score', 0.5),
-                    'social_signals': result.get('social_signals', {}),
-                    'technical_score': result.get('technical_score', 0.5),
-                    'publish_date': result.get('publish_date', '2023-01-01'),
-                    'content_type': result.get('content_type', 'general')
-                }
-                enhanced_results.append(enhanced_result)
-            
-            # Clean results for JSON serialization
-            self.current_results = clean_search_results(enhanced_results)
-            
-            self.query_history.append({
-                'query': query,
-                'language': language,
-                'timestamp': datetime.now().isoformat(),
-                'num_results': len(enhanced_results)
-            })
-            
-            self.system_metrics['total_queries'] += 1
-            return self.current_results
-            
-        except Exception as e:
-            logger.error(f"Error in search: {str(e)}")
-            # Return empty results on error
-            self.current_results = []
-            return []
-
-    def _generate_or_extract_embedding(self, result: Dict) -> List[float]:
-        """Generate or extract embedding for a result"""
-        try:
-            # Check if embedding already exists
-            if 'embedding' in result and result['embedding']:
-                embedding = result['embedding']
-                # Convert numpy array to list if needed
-                if isinstance(embedding, np.ndarray):
-                    return embedding.tolist()
-                return embedding
-            
-            # Generate embedding from title and snippet
-            text = f"{result['title']} {result['snippet']}"
-            if result.get('language') == 'ar':
-                # Process Arabic text
-                processed_text = self.arabic_processor.preprocess_text(text)
-                embedding = self.sentence_model.encode(processed_text)
-            else:
-                embedding = self.sentence_model.encode(text)
-            
-            # Convert to list for JSON serialization
-            return embedding.tolist()
-            
-        except Exception as e:
-            logger.error(f"Error generating embedding: {str(e)}")
-            # Return zero embedding on error
-            return [0.0] * 384  # Dimension of all-MiniLM-L6-v2
-
-    def perform_clustering(self, algorithm: str = 'kmeans', num_clusters: int = 4, 
-                          min_cluster_size: int = 2) -> List[Dict]:
-        """Perform clustering on current search results"""
-        if not self.current_results:
-            logger.warning("No current results to cluster")
-            return []
-        
-        logger.info(f"Performing clustering with algorithm: {algorithm}")
-        
-        try:
-            # Extract embeddings
-            embeddings = np.array([result['embedding'] for result in self.current_results])
-            
-            # Validate embeddings
-            if embeddings.size == 0:
-                logger.warning("No valid embeddings found for clustering")
-                return []
-            
-            # Perform clustering
-            cluster_labels = self.clustering_manager.cluster(
-                embeddings, algorithm, num_clusters, min_cluster_size
-            )
-            
-            # Organize results into clusters
-            clusters = self._organize_clusters(cluster_labels)
-            
-            # Apply RL optimization
-            optimized_clusters = self.rl_agent.optimize_clusters(
-                clusters, self.user_feedback_history[-10:]  # Last 10 feedback items
-            )
-            
-            # Clean clusters for JSON serialization
-            self.current_clusters = clean_cluster_data(optimized_clusters)
-            return self.current_clusters
-            
-        except Exception as e:
-            logger.error(f"Error in clustering: {str(e)}")
-            # Return empty clusters on error
-            return []
-
-    def _organize_clusters(self, cluster_labels: np.ndarray) -> List[Dict]:
-        """Organize search results into cluster structure"""
-        cluster_dict = defaultdict(list)
-        
-        # Convert numpy types to Python types
-        labels_list = [int(label) for label in cluster_labels]
-        
-        for i, label in enumerate(labels_list):
-            if label != -1:  # -1 indicates noise/outlier in some algorithms
-                cluster_dict[label].append(self.current_results[i])
-        
-        clusters = []
-        for cluster_id, results in cluster_dict.items():
-            if len(results) > 0:
-                cluster = {
-                    'id': int(cluster_id),  # Ensure Python int
-                    'label': self._generate_cluster_label(results),
-                    'results': results,
-                    'size': len(results),
-                    'coherence_score': float(self._calculate_cluster_coherence(results)),
-                    'diversity_score': float(self._calculate_cluster_diversity(results))
-                }
-                clusters.append(cluster)
-        
-        return sorted(clusters, key=lambda x: x['size'], reverse=True)
-
-    def _generate_cluster_label(self, results: List[Dict]) -> str:
-        """Generate meaningful labels for clusters"""
-        # Extract categories and titles
-        categories = [result.get('category', 'general') for result in results]
-        titles = [result['title'] for result in results]
-        
-        # Find most common category
-        category_counts = defaultdict(int)
-        for cat in categories:
-            category_counts[cat] += 1
-        
-        most_common_category = max(category_counts.items(), key=lambda x: x[1])[0]
-        
-        # Generate label based on category
-        category_labels = {
-            'person_musician': 'Musicians & Artists',
-            'person_politician': 'Political Figures',
-            'person_artist': 'Artists & Creators',
-            'location': 'Places & Locations',
-            'company': 'Companies & Organizations',
-            'product_tech': 'Technology Products',
-            'programming': 'Programming & Development',
-            'animal': 'Animals & Nature',
-            'food': 'Food & Nutrition',
-            'entertainment': 'Entertainment & Media',
-            'education': 'Educational Content',
-            'news': 'News & Current Events',
-            'general': 'General Information'
-        }
-        
-        return category_labels.get(most_common_category, 'Mixed Content')
-
-    def _calculate_cluster_coherence(self, results: List[Dict]) -> float:
-        """Calculate coherence score for a cluster"""
-        try:
-            if len(results) < 2:
-                return 1.0
-            
-            embeddings = np.array([result['embedding'] for result in results])
-            centroid = np.mean(embeddings, axis=0)
-            
-            # Calculate average distance to centroid
-            distances = [np.linalg.norm(emb - centroid) for emb in embeddings]
-            avg_distance = np.mean(distances)
-            
-            # Convert to coherence score (lower distance = higher coherence)
-            coherence = 1.0 / (1.0 + avg_distance)
-            return min(coherence, 1.0)
-            
-        except Exception as e:
-            logger.error(f"Error calculating cluster coherence: {str(e)}")
-            return 0.5
-
-    def _calculate_cluster_diversity(self, results: List[Dict]) -> float:
-        """Calculate diversity score for a cluster"""
-        try:
-            categories = [result.get('category', 'general') for result in results]
-            unique_categories = len(set(categories))
-            total_results = len(results)
-            
-            return unique_categories / total_results if total_results > 0 else 0
-            
-        except Exception as e:
-            logger.error(f"Error calculating cluster diversity: {str(e)}")
-            return 0.5
-
-    def process_feedback(self, feedback_data: Dict) -> Dict:
-        """Process user feedback and update RL agent"""
-        logger.info(f"Processing feedback: {feedback_data}")
-        
-        try:
-            # Add timestamp and additional context
-            feedback_data['timestamp'] = datetime.now().isoformat()
-            feedback_data['query'] = self.query_history[-1]['query'] if self.query_history else ''
-            
-            # Store feedback
-            self.user_feedback_history.append(feedback_data)
-            self.system_metrics['total_feedback_items'] += 1
-            
-            # Update RL agent
-            reward = self.rl_agent.process_feedback(feedback_data)
-            self.system_metrics['total_reward'] += reward
-            self.system_metrics['rl_episodes'] += 1
-            
-            # Update user satisfaction
-            self._update_user_satisfaction()
-            
-            # Save system state periodically
-            if self.system_metrics['total_feedback_items'] % 10 == 0:
-                self.save_system_state()
-            
-            # Clean result for JSON serialization
-            result = {
-                'status': 'success',
-                'reward': float(reward),
-                'total_episodes': int(self.system_metrics['rl_episodes']),
-                'exploration_rate': float(self.rl_agent.get_exploration_rate())
+            if (!query.trim()) {
+                alert('Please enter a search query');
+                return;
             }
             
-            return result
+            resultsArea.style.display = 'block';
+            resultsArea.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Searching for "${query}"...</p>
+                </div>
+            `;
             
-        except Exception as e:
-            logger.error(f"Error processing feedback: {str(e)}")
-            return {
-                'status': 'error',
-                'error': str(e),
-                'reward': 0.0,
-                'total_episodes': self.system_metrics.get('rl_episodes', 0),
-                'exploration_rate': 0.8
-            }
-
-    def _update_user_satisfaction(self):
-        """Update average user satisfaction based on recent feedback"""
-        try:
-            if not self.user_feedback_history:
-                return
-            
-            recent_feedback = self.user_feedback_history[-20:]  # Last 20 items
-            positive_feedback = [
-                'relevant', 'excellent', 'good', 'helpful', 'accurate'
-            ]
-            
-            positive_count = sum(1 for fb in recent_feedback 
-                               if fb.get('feedback') in positive_feedback)
-            
-            satisfaction = positive_count / len(recent_feedback)
-            self.system_metrics['avg_user_satisfaction'] = satisfaction
-            
-        except Exception as e:
-            logger.error(f"Error updating user satisfaction: {str(e)}")
-
-    def get_system_metrics(self) -> Dict:
-        """Get current system performance metrics"""
-        try:
-            if self.current_clusters:
-                # Calculate clustering metrics
-                cluster_labels = []
-                true_labels = []  # Based on categories for evaluation
-                
-                for cluster in self.current_clusters:
-                    for result in cluster['results']:
-                        cluster_labels.append(cluster['id'])
-                        true_labels.append(result.get('category', 'general'))
-                
-                metrics = self.metrics_calculator.calculate_all_metrics(
-                    self.current_results,
-                    self.current_clusters,
-                    cluster_labels,
-                    true_labels
-                )
-            else:
-                metrics = {
-                    'cluster_purity': 0.0,
-                    'adjusted_rand_index': 0.0,
-                    'silhouette_score': 0.0,
-                    'normalized_mutual_info': 0.0
-                }
-            
-            # Combine with system metrics
-            metrics.update(self.system_metrics)
-            metrics['user_satisfaction_pct'] = int(self.system_metrics['avg_user_satisfaction'] * 100)
-            
-            # Clean metrics for JSON serialization
-            return clean_metrics_data(metrics)
-            
-        except Exception as e:
-            logger.error(f"Error calculating metrics: {str(e)}")
-            # Return basic metrics on error
-            return clean_metrics_data({
-                'total_queries': self.system_metrics.get('total_queries', 0),
-                'total_feedback_items': self.system_metrics.get('total_feedback_items', 0),
-                'user_satisfaction_pct': int(self.system_metrics.get('avg_user_satisfaction', 0.75) * 100),
-                'rl_episodes': self.system_metrics.get('rl_episodes', 0),
-                'total_reward': self.system_metrics.get('total_reward', 0.0),
-                'cluster_purity': 0.0,
-                'adjusted_rand_index': 0.0,
-                'silhouette_score': 0.0,
-                'normalized_mutual_info': 0.0
+            fetch('/api/search', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({query, language, num_results: 10})
             })
-
-# Initialize the system
-system = SearchDisambiguationSystem()
-
-# API Routes
-@app.route('/api/search', methods=['POST'])
-def api_search():
-    """API endpoint for performing search"""
-    try:
-        data = request.get_json()
-        query = data.get('query', '')
-        language = data.get('language', 'en')
-        num_results = data.get('num_results', 20)
-        
-        if not query:
-            return jsonify({'error': 'Query is required'}), 400
-        
-        results = system.perform_search(query, language, num_results)
-        
-        response_data = {
-            'status': 'success',
-            'results': results,
-            'query': query,
-            'language': language,
-            'total_results': len(results)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsArea.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    displayResults(data);
+                }
+            })
+            .catch(error => {
+                resultsArea.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
         }
         
-        return jsonify(response_data)
-    
-    except Exception as e:
-        logger.error(f"Error in search: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/cluster', methods=['POST'])
-def api_cluster():
-    """API endpoint for clustering results"""
-    try:
-        data = request.get_json()
-        algorithm = data.get('algorithm', 'kmeans')
-        num_clusters = data.get('num_clusters', 4)
-        min_cluster_size = data.get('min_cluster_size', 2)
-        
-        clusters = system.perform_clustering(algorithm, num_clusters, min_cluster_size)
-        
-        response_data = {
-            'status': 'success',
-            'clusters': clusters,
-            'algorithm': algorithm,
-            'total_clusters': len(clusters)
+        function performClustering() {
+            const resultsArea = document.getElementById('resultsArea');
+            
+            resultsArea.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Clustering results...</p>
+                </div>
+            `;
+            
+            fetch('/api/cluster', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({algorithm: 'kmeans', num_clusters: 3})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsArea.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    displayClusters(data);
+                }
+            })
+            .catch(error => {
+                resultsArea.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
         }
         
-        return jsonify(response_data)
-    
-    except Exception as e:
-        logger.error(f"Error in clustering: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/feedback', methods=['POST'])
-def api_feedback():
-    """API endpoint for processing user feedback"""
-    try:
-        feedback_data = request.get_json()
-        
-        if not feedback_data:
-            return jsonify({'error': 'Feedback data is required'}), 400
-        
-        result = system.process_feedback(feedback_data)
-        
-        return jsonify(result)
-    
-    except Exception as e:
-        logger.error(f"Error processing feedback: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/metrics', methods=['GET'])
-def api_metrics():
-    """API endpoint for getting system metrics"""
-    try:
-        metrics = system.get_system_metrics()
-        return jsonify(metrics)
-    
-    except Exception as e:
-        logger.error(f"Error getting metrics: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/health', methods=['GET'])
-def api_health():
-    """Health check endpoint"""
-    try:
-        response_data = {
-            'status': 'healthy',
-            'timestamp': datetime.now().isoformat(),
-            'system_metrics': system.get_system_metrics()
+        function displayResults(data) {
+            const resultsArea = document.getElementById('resultsArea');
+            const results = data.results || [];
+            
+            let html = `
+                <h4>🔍 Search Results for "${data.query}" (${results.length} results)</h4>
+                <p><small>Sources: ${(data.data_sources || []).join(', ')}</small></p>
+            `;
+            
+            if (results.length === 0) {
+                html += '<p>No results found. Try a different query.</p>';
+            } else {
+                results.forEach((result, idx) => {
+                    html += `
+                        <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #6366f1;">
+                            <h5 style="margin: 0 0 8px 0; color: #1f2937;">
+                                <a href="${result.url}" target="_blank" style="color: #1f2937; text-decoration: none;">
+                                    ${result.title}
+                                </a>
+                            </h5>
+                            <p style="margin: 0 0 8px 0; color: #4b5563; line-height: 1.4;">
+                                ${result.snippet}
+                            </p>
+                            <div style="font-size: 12px; color: #6b7280;">
+                                <span>📊 ${result.category}</span> • 
+                                <span>🌐 ${result.domain}</span> • 
+                                <span>📈 ${(result.relevance_score * 100).toFixed(0)}% relevant</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button onclick="performClustering()" class="btn">🎯 Cluster These Results</button>
+                    </div>
+                `;
+            }
+            
+            resultsArea.innerHTML = html;
         }
-        return jsonify(response_data)
-    except Exception as e:
-        logger.error(f"Error in health check: {str(e)}")
-        return jsonify({
-            'status': 'error',
-            'timestamp': datetime.now().isoformat(),
-            'error': str(e)
-        }), 500
+        
+        function displayClusters(data) {
+            const resultsArea = document.getElementById('resultsArea');
+            const clusters = data.clusters || [];
+            
+            let html = `
+                <h4>🎯 Clustered Results (${clusters.length} clusters)</h4>
+                <p><small>Algorithm: ${data.algorithm}</small></p>
+            `;
+            
+            clusters.forEach((cluster, idx) => {
+                const clusterColors = ['#e0f2fe', '#f3e5f5', '#e8f5e8', '#fff3e0', '#fce4ec'];
+                const color = clusterColors[idx % clusterColors.length];
+                
+                html += `
+                    <div style="background: ${color}; padding: 15px; margin: 15px 0; border-radius: 10px; border: 1px solid #ddd;">
+                        <h5 style="margin: 0 0 10px 0; color: #1f2937;">
+                            🏷️ ${cluster.label} (${cluster.size} results)
+                        </h5>
+                `;
+                
+                cluster.results.forEach(result => {
+                    html += `
+                        <div style="background: white; padding: 10px; margin: 8px 0; border-radius: 6px;">
+                            <strong>${result.title}</strong><br>
+                            <small style="color: #4b5563;">${result.snippet.substring(0, 150)}...</small><br>
+                            <small style="color: #6b7280;">🌐 ${result.domain} • 📊 ${result.category}</small>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            });
+            
+            html += `
+                <div style="margin-top: 20px; text-align: center;">
+                    <button onclick="performSearch()" class="btn btn-secondary">🔍 New Search</button>
+                </div>
+            `;
+            
+            resultsArea.innerHTML = html;
+        }
+        
+        // Auto-refresh if system not ready
+        {% if status != 'ready' %}
+        setTimeout(() => location.reload(), 5000);
+        {% endif %}
+    </script>
+</body>
+</html>
+    """
 
-@app.route('/')
+
+@app.route("/")
 def index():
     """Serve the main HTML interface"""
-    return app.send_static_file('index.html')
+    try:
+        # Try to serve static index.html first
+        """Serve the main HTML interface"""
+        return app.send_static_file("index.html")
+    except Exception:
+        # Fallback to dynamic HTML
+        return render_template_string(create_fallback_html(), status=system_status)
 
-if __name__ == '__main__':
-    # Start background threads for system maintenance
-    def periodic_save():
-        while True:
-            time.sleep(300)  # Save every 5 minutes
+
+@app.route("/api/search", methods=["POST"])
+def api_search():
+    """Perform search using real datasets"""
+    if not search_system:
+        return (
+            jsonify(
+                {
+                    "error": "Search system not available",
+                    "status": system_status,
+                    "suggestion": "Run: python setup_system.py to initialize the system",
+                }
+            ),
+            500,
+        )
+
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request body required"}), 400
+
+        query = data.get("query", "").strip()
+        language = data.get("language", "en")
+        num_results = data.get("num_results", 20)
+
+        if not query:
+            return jsonify({"error": "Query parameter is required"}), 400
+
+        logger.info(
+            f"🔍 Search request: '{query}' ({language}) - {num_results} results"
+        )
+
+        # Perform search
+        results = search_system.search(query, language, num_results)
+
+        response_data = {
+            "status": "success",
+            "results": results,
+            "query": query,
+            "language": language,
+            "total_results": len(results),
+            "data_sources": search_system.get_last_search_sources(),
+            "is_real_data": True,
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        logger.info(f"✅ Search completed: {len(results)} results found")
+        return jsonify(response_data)
+
+    except Exception as e:
+        logger.error(f"❌ Search error: {str(e)}")
+        return (
+            jsonify(
+                {
+                    "error": str(e),
+                    "query": data.get("query", "") if data else "",
+                    "timestamp": datetime.now().isoformat(),
+                }
+            ),
+            500,
+        )
+
+
+@app.route("/api/cluster", methods=["POST"])
+def api_cluster():
+    """Cluster current search results"""
+    if not search_system:
+        return (
+            jsonify({"error": "Search system not available", "status": system_status}),
+            500,
+        )
+
+    try:
+        data = request.get_json() or {}
+        algorithm = data.get("algorithm", "kmeans")
+        num_clusters = data.get("num_clusters", 4)
+        min_cluster_size = data.get("min_cluster_size", 2)
+
+        logger.info(f"🎯 Clustering request: {algorithm} with {num_clusters} clusters")
+
+        clusters = search_system.cluster(algorithm, num_clusters, min_cluster_size)
+
+        response_data = {
+            "status": "success",
+            "clusters": clusters,
+            "algorithm": algorithm,
+            "total_clusters": len(clusters),
+            "is_real_data": True,
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        logger.info(f"✅ Clustering completed: {len(clusters)} clusters created")
+        return jsonify(response_data)
+
+    except Exception as e:
+        logger.error(f"❌ Clustering error: {str(e)}")
+        return jsonify({"error": str(e), "timestamp": datetime.now().isoformat()}), 500
+
+
+@app.route("/api/feedback", methods=["POST"])
+def api_feedback():
+    """Process user feedback"""
+    if not search_system:
+        return jsonify({"error": "Search system not available"}), 500
+
+    try:
+        feedback_data = request.get_json()
+        if not feedback_data:
+            return jsonify({"error": "Feedback data is required"}), 400
+
+        logger.info(f"💬 Feedback received: {feedback_data.get('feedback', 'unknown')}")
+        result = search_system.process_feedback(feedback_data)
+
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"❌ Feedback error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/metrics", methods=["GET"])
+def api_metrics():
+    """Get system performance metrics"""
+    if not search_system:
+        return jsonify(
+            {
+                "error": "Search system not available",
+                "total_queries": 0,
+                "system_status": system_status,
+            }
+        )
+
+    try:
+        metrics = search_system.get_metrics()
+        metrics["system_status"] = system_status
+        metrics["timestamp"] = datetime.now().isoformat()
+        return jsonify(metrics)
+
+    except Exception as e:
+        logger.error(f"❌ Metrics error: {str(e)}")
+        return jsonify({"error": str(e), "system_status": system_status}), 500
+
+
+@app.route("/api/dataset-info", methods=["GET"])
+def api_dataset_info():
+    """Get information about available datasets"""
+    if not search_system:
+        return jsonify(
+            {
+                "error": "Search system not available",
+                "status": system_status,
+                "available_sources": [],
+                "suggestion": "Run: python setup_system.py",
+            }
+        )
+
+    try:
+        dataset_info = search_system.get_dataset_info()
+        dataset_info["system_status"] = system_status
+        dataset_info["timestamp"] = datetime.now().isoformat()
+        return jsonify(dataset_info)
+
+    except Exception as e:
+        logger.error(f"❌ Dataset info error: {str(e)}")
+        return jsonify({"error": str(e), "system_status": system_status}), 500
+
+
+@app.route("/api/ambiguous-queries", methods=["GET"])
+def api_ambiguous_queries():
+    """Get real ambiguous queries from datasets"""
+    if not search_system:
+        return jsonify(
+            {
+                "error": "Search system not available",
+                "queries": [],
+                "status": system_status,
+            }
+        )
+
+    try:
+        language = request.args.get("language", "en")
+        limit = int(request.args.get("limit", 20))
+
+        queries = search_system.get_ambiguous_queries(language, limit)
+
+        return jsonify(
+            {
+                "status": "success",
+                "queries": queries,
+                "language": language,
+                "total_queries": len(queries),
+                "is_real_data": True,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"❌ Ambiguous queries error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/health", methods=["GET"])
+def api_health():
+    """Comprehensive health check endpoint"""
+    try:
+        health_info = {
+            "status": "healthy" if search_system else "degraded",
+            "system_status": system_status,
+            "timestamp": datetime.now().isoformat(),
+            "system_type": "real_datasets",
+            "version": "2.1.0",
+            "real_search_available": REAL_SEARCH_AVAILABLE,
+            "components": {
+                "search_system": search_system is not None,
+                "real_data": REAL_SEARCH_AVAILABLE,
+            },
+        }
+
+        if search_system:
             try:
-                system.save_system_state()
+                # Get additional system info
+                dataset_info = search_system.get_dataset_info()
+                health_info.update(
+                    {
+                        "datasets_loaded": search_system.get_loaded_datasets(),
+                        "last_search_sources": search_system.get_last_search_sources(),
+                        "total_results": dataset_info.get("statistics", {}).get(
+                            "total_results", 0
+                        ),
+                        "data_sources": dataset_info.get("statistics", {}).get(
+                            "results_by_source", {}
+                        ),
+                        "languages": dataset_info.get("statistics", {}).get(
+                            "results_by_language", {}
+                        ),
+                    }
+                )
             except Exception as e:
-                logger.error(f"Error in periodic save: {str(e)}")
-    
-    save_thread = threading.Thread(target=periodic_save, daemon=True)
-    save_thread.start()
-    
-    logger.info("Starting Flask application...")
-    
-    # Run the Flask app
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+                health_info["warning"] = f"Could not get detailed stats: {str(e)}"
+
+        status_code = 200 if search_system else 503
+        return jsonify(health_info), status_code
+
+    except Exception as e:
+        logger.error(f"❌ Health check error: {str(e)}")
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "timestamp": datetime.now().isoformat(),
+                    "error": str(e),
+                    "system_status": system_status,
+                }
+            ),
+            500,
+        )
+
+
+@app.route("/static/<path:filename>")
+def serve_static(filename):
+    """Serve static files"""
+    try:
+        return send_from_directory("static", filename)
+    except Exception:
+        return "Static file not found", 404
+
+
+def periodic_save():
+    """Background thread for periodic system state saving"""
+    while True:
+        time.sleep(300)  # Save every 5 minutes
+        try:
+            if search_system:
+                search_system.save_state()
+                logger.debug("💾 Periodic save completed")
+        except Exception as e:
+            logger.error(f"❌ Periodic save error: {str(e)}")
+
+
+def main():
+    """Main application entry point"""
+    global search_system, system_status
+
+    # Initialize system at startup
+    logger.info("🚀 Starting Real Data Search Disambiguation System...")
+    initialize_search_system()
+
+    # Start background save thread
+    if search_system:
+        save_thread = threading.Thread(target=periodic_save, daemon=True)
+        save_thread.start()
+        logger.info("📝 Background save thread started")
+
+    # Print startup banner
+    print("\n" + "=" * 70)
+    print("🔍 DYNAMIC SEARCH RESULT DISAMBIGUATION SYSTEM")
+    print("=" * 70)
+    print(f"Status: {'✅ READY' if search_system else '❌ NOT READY'}")
+    print(f"System: {system_status}")
+    print("")
+
+    if search_system:
+        try:
+            dataset_info = search_system.get_dataset_info()
+            stats = dataset_info.get("statistics", {})
+            print("📊 Real Data Loaded:")
+            print(f"   • Total Results: {stats.get('total_results', 0)}")
+            print(
+                f"   • Languages: {list(stats.get('results_by_language', {}).keys())}"
+            )
+            print(f"   • Sources: {list(stats.get('results_by_source', {}).keys())}")
+            print("")
+            print("🔍 Try these ambiguous queries:")
+            print("   • python (programming vs snake)")
+            print("   • apple (company vs fruit)")
+            print("   • java (programming vs island)")
+            print("   • mercury (planet vs element)")
+            print("   • عين (eye vs spring - Arabic)")
+        except Exception:
+            print("⚠️  System loaded but stats unavailable")
+    else:
+        print("❌ System not ready. To fix:")
+        print("   1. Run: python setup_system.py")
+        print("   2. Check error messages above")
+        print("   3. Ensure all dependencies are installed")
+
+    print("")
+    print("🌐 Server will start at: http://localhost:5000")
+    print("📊 Health check: http://localhost:5000/api/health")
+    print("📁 Dataset info: http://localhost:5000/api/dataset-info")
+    print("=" * 70)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+
+        # Run the Flask app
+        app.run(
+            debug=True,
+            host="0.0.0.0",
+            port=5000,
+            threaded=True,
+            use_reloader=False,  # Prevent double initialization
+        )
+
+    except KeyboardInterrupt:
+        print("\n👋 Shutting down gracefully...")
+        if search_system:
+            try:
+                search_system.save_state()
+                print("💾 System state saved")
+            except Exception:
+                pass
+    except Exception as e:
+        logger.error(f"❌ Application error: {str(e)}")
+        print(f"\n❌ Application failed to start: {str(e)}")
+        print("\n💡 Troubleshooting steps:")
+        print("1. Run: python setup_system.py")
+        print("2. Check that all dependencies are installed")
+        print("3. Verify the real_search package is available")
+        sys.exit(1)

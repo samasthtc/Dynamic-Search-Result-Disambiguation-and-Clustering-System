@@ -1,0 +1,106 @@
+{
+  "feedback_history": [
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "\u0639\u064a\u0646",
+      "cluster_size": 3,
+      "timestamp": "2025-06-10T00:02:48.838256"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "\u0639\u064a\u0646",
+      "cluster_size": 3,
+      "timestamp": "2025-06-10T00:02:51.062057"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "\u0639\u064a\u0646",
+      "cluster_size": 3,
+      "timestamp": "2025-06-10T00:03:15.318895"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "\u0639\u064a\u0646",
+      "cluster_size": 3,
+      "timestamp": "2025-06-10T00:03:21.024913"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Mercury",
+      "cluster_size": 3,
+      "timestamp": "2025-06-10T00:03:42.115478"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Mercury",
+      "cluster_size": 3,
+      "timestamp": "2025-06-10T00:03:42.379592"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Mercury",
+      "cluster_size": 3,
+      "timestamp": "2025-06-10T00:03:42.479049"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Mercury",
+      "cluster_size": 3,
+      "timestamp": "2025-06-10T00:03:42.654512"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_merge",
+      "context": "cluster",
+      "query": "Mercury",
+      "cluster_size": 3,
+      "timestamp": "2025-06-10T00:03:48.379859"
+    },
+    {
+      "result_index": 2,
+      "feedback": "wrong_cluster",
+      "context": "result",
+      "query": "Mercury",
+      "language": "en",
+      "timestamp": "2025-06-10T00:03:49.495987"
+    }
+  ],
+  "cluster_feedback": {},
+  "action_rewards": {},
+  "optimization_stats": {
+    "merge_attempts": 3,
+    "split_attempts": 11,
+    "rebalance_attempts": 0,
+    "total_rewards": -9.372,
+    "episodes": 10
+  },
+  "satisfaction_history": [
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.1
+  ],
+  "timestamp": "2025-06-10T00:06:35.884856"
+}

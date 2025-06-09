@@ -38,83 +38,186 @@ This system addresses the challenge of ambiguous search queries (like "Jackson",
                                 └── Evaluation Metrics Calculator
 ```
 
-## 🚀 Quick Start
+## Quick Start (Recommended)
 
-### Prerequisites
-
-- Python 3.8 or higher
-- Node.js (optional, for advanced frontend features)
-- 4GB+ RAM recommended
-- CUDA-compatible GPU (optional, for faster processing)
-
-### Installation
-
-1. **Clone the repository:**
+Run this single command to set up everything:
 
 ```bash
-git clone github.com/samasthtc/Dynamic-Search-Result-Disambiguation-and-Clustering-System.git
-cd Dynamic-Search-Result-Disambiguation-and-Clustering-System
+python run_real_data_setup.py
 ```
 
-2. **Create virtual environment:**
+This will:
+
+- ✅ Install all required packages
+- ✅ Collect real data from Wikipedia and ArXiv (~10 results per term)
+- ✅ Set up the database with real disambiguation data
+- ✅ Test the system
+- ✅ Create a startup script
+
+Then start the system:
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python start_system.py
+# OR
+python app.py
 ```
 
-3. **Install dependencies:**
+Open: http://localhost:5000
+
+---
+
+## Manual Setup (If needed)
+
+### Step 1: Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install sentence-transformers requests flask flask-cors numpy pandas scikit-learn
+pip install hdbscan wikipedia-api arabic-reshaper python-bidi  # Optional but recommended
 ```
 
-4. **Download required models:**
+### Step 2: Collect Real Data
 
 ```bash
-python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+python setup_real_data.py
 ```
 
-### Running the System
+### Step 3: Create Missing Files
 
-1. **Start the Flask backend:**
+Create `real_search/__init__.py`:
+
+```python
+from .system import RealSearchSystem
+from .datasets import DatasetManager
+from .clustering import ClusteringEngine
+from .feedback import FeedbackProcessor
+from .json_utils import NumpyEncoder, clean_for_json
+
+__all__ = ["RealSearchSystem", "DatasetManager", "ClusteringEngine", "FeedbackProcessor", "NumpyEncoder", "clean_for_json"]
+```
+
+### Step 4: Test the System
 
 ```bash
 python app.py
 ```
 
-2. **Open the frontend:**
+---
 
-   - Navigate to `http://localhost:5000` in your web browser
-   - The system will automatically serve the HTML interface
+## What You Get
 
-3. **Start experimenting:**
-   - Try ambiguous queries like "Jackson", "Apple", "Python"
-   - Provide feedback to train the reinforcement learning agent
-   - Experiment with different clustering algorithms
+### Real Data Sources:
 
-## 📁 File Structure
+- 📚 **Wikipedia**: Disambiguation pages for ambiguous terms
+- 🔬 **ArXiv**: Academic papers for technical terms
+- 🌐 **Live APIs**: Real-time fetching when needed
+
+### Ambiguous Terms Included:
+
+**English:**
+
+- python (programming vs snake)
+- apple (company vs fruit)
+- java (programming vs island)
+- mercury (planet vs element)
+- mars (planet vs company)
+- amazon (company vs river)
+- And more...
+
+**Arabic:**
+
+- عين (eye vs spring vs spy)
+- بنك (bank vs river bank)
+- ورد (rose vs mentioned)
+- سلم (peace vs ladder)
+- And more...
+
+### Features:
+
+- ✅ Real disambiguation data (~10 results per term)
+- ✅ Multiple clustering algorithms (K-means, HDBSCAN, etc.)
+- ✅ Reinforcement learning for optimization
+- ✅ Multilingual support (English + Arabic)
+- ✅ Live data fetching
+- ✅ Interactive user feedback
+- ✅ Comprehensive evaluation metrics
+
+---
+
+## Troubleshooting
+
+### If you get import errors:
+
+1. Make sure all `__init__.py` files exist
+2. Check that packages are installed: `pip list`
+3. Try the manual setup steps above
+
+### If no data is collected:
+
+1. Check internet connection
+2. Make sure Wikipedia is accessible
+3. The system will fall back to sample data automatically
+
+### If clustering fails:
+
+1. Install hdbscan: `pip install hdbscan`
+2. The system will use alternative algorithms if hdbscan is not available
+
+### If Arabic queries don't work:
+
+1. Install Arabic support: `pip install arabic-reshaper python-bidi`
+2. Check that the database has Arabic data
+
+---
+
+## Testing the System
+
+Try these sample queries once the system is running:
+
+1. **python** - Should show programming language vs snake results
+2. **apple** - Should show company vs fruit results
+3. **java** - Should show programming vs island results
+4. **عين** - Should show Arabic eye vs spring results
+
+Check these endpoints:
+
+- http://localhost:5000/api/health - System status
+- http://localhost:5000/api/dataset-info - Dataset information
+- http://localhost:5000/api/ambiguous-queries - Available queries
+
+---
+
+## File Structure After Setup
 
 ```
-search-disambiguation-system/
-├── app.py                              # Main Flask application
-├── rl_agent.py                         # Reinforcement Learning Agent
-├── clustering_algorithms.py            # Clustering Manager
-├── evaluation_metrics.py               # Metrics Calculator
-├── arabic_processor.py                 # Arabic Text Processor
-├── search_simulator/                   # Search Simulator Package
-│   ├── __init__.py                     # Package initialization
-│   ├── search_simulator.py             # Main simulator class
-│   ├── data_templates.py               # Query templates and data
-│   ├── result_generator.py             # Result generation logic
-│   ├── user_behavior.py               # User behavior modeling
-│   ├── query_analyzer.py              # Query analysis and recommendations
-│   └── arabic_support.py              # Arabic language support
-├── index.html                          # Frontend Interface
-├── requirements.txt                    # Python Dependencies
-├── README.md                           # This file
-└── static/                             # Static files (if needed)
+your-project/
+├── datasets/
+│   ├── real_search_data.db    # Real data database
+│   └── miracl/                # Sample MIRACL data
+├── real_search/
+│   ├── __init__.py            # Package init
+│   ├── system.py              # Main system
+│   ├── datasets.py            # Dataset manager
+│   ├── clustering.py          # Clustering engine
+│   ├── feedback.py            # Feedback processor
+│   └── json_utils.py          # JSON utilities
+├── app.py                     # Main Flask app
+├── setup_real_data.py         # Data collection script
+├── run_real_data_setup.py     # Complete setup script
+├── start_system.py            # Quick start script
+└── index.html                 # Frontend interface
 ```
+
+---
+
+## Next Steps After Setup
+
+1. **Test different clustering algorithms** in the web interface
+2. **Provide feedback** on clustering quality to train the RL agent
+3. **Try Arabic queries** to test multilingual support
+4. **Check metrics** to see system performance
+5. **Add more ambiguous terms** by modifying the data collection script
+
+Enjoy your real data search disambiguation system! 🎉
 
 ## 🔧 Key Components
 
