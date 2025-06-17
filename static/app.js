@@ -1,6 +1,6 @@
 /**
  * Dynamic Search Result Disambiguation System
- * Frontend JavaScript Application
+ * Frontend JavaScript Application - FIXED VERSION (Event Listeners)
  */
 
 class SearchDisambiguationAPI {
@@ -101,22 +101,6 @@ class SearchDisambiguationAPI {
 
     searchInput.parentNode.insertBefore(samplesDiv, searchInput.nextSibling);
   }
-
-  /**
-   * Update interface based on selected language
-   */
-  // updateLanguageInterface() {
-  //   const container = document.querySelector('.main-content');
-  //   const searchInput = document.getElementById('searchInput');
-
-  //   if (this.currentLanguage === 'ar') {
-  //     container.classList.add('arabic-support');
-  //     searchInput.placeholder = 'أدخل استعلام البحث الغامض...';
-  //   } else {
-  //     container.classList.remove('arabic-support');
-  //     searchInput.placeholder = 'Enter ambiguous search query...';
-  //   }
-  // }
 
   /**
    * Perform search with the current query
@@ -319,12 +303,24 @@ class SearchDisambiguationAPI {
                 <div class="feedback-section">
                     <strong>Rate this result:</strong>
                     <div class="feedback-buttons">
-                        <button class="feedback-btn" onclick="api.provideFeedback(${index}, 'relevant', 'result')">👍 Relevant</button>
-                        <button class="feedback-btn" onclick="api.provideFeedback(${index}, 'irrelevant', 'result')">👎 Irrelevant</button>
-                        <button class="feedback-btn" onclick="api.provideFeedback(${index}, 'wrong_cluster', 'result')">🔄 Wrong Cluster</button>
+                        <button class="feedback-btn" data-index="${index}" data-feedback="relevant" data-context="result">👍 Relevant</button>
+                        <button class="feedback-btn" data-index="${index}" data-feedback="irrelevant" data-context="result">👎 Irrelevant</button>
+                        <button class="feedback-btn" data-index="${index}" data-feedback="wrong_cluster" data-context="result">🔄 Wrong Cluster</button>
                     </div>
                 </div>
             `;
+
+      // Add event listeners to feedback buttons
+      const feedbackButtons = resultDiv.querySelectorAll('.feedback-btn');
+      feedbackButtons.forEach(button => {
+        button.addEventListener('click', e => {
+          const index = parseInt(e.target.dataset.index);
+          const feedback = e.target.dataset.feedback;
+          const context = e.target.dataset.context;
+          this.provideFeedback(e, index, feedback, context);
+        });
+      });
+
       container.appendChild(resultDiv);
     });
   }
@@ -367,23 +363,37 @@ class SearchDisambiguationAPI {
                     <div class="feedback-section">
                         <strong>Rate this cluster:</strong>
                         <div class="feedback-buttons">
-                            <button class="feedback-btn" onclick="api.provideClusterFeedback(${clusterIndex}, 'excellent')">⭐ Excellent</button>
-                            <button class="feedback-btn" onclick="api.provideClusterFeedback(${clusterIndex}, 'good')">👍 Good</button>
-                            <button class="feedback-btn" onclick="api.provideClusterFeedback(${clusterIndex}, 'poor')">👎 Poor</button>
-                            <button class="feedback-btn" onclick="api.provideClusterFeedback(${clusterIndex}, 'should_split')">✂️ Split</button>
-                            <button class="feedback-btn" onclick="api.provideClusterFeedback(${clusterIndex}, 'should_merge')">🔗 Merge</button>
+                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="excellent">⭐ Excellent</button>
+                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="good">👍 Good</button>
+                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="poor">👎 Poor</button>
+                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="should_split">✂️ Split</button>
+                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="should_merge">🔗 Merge</button>
                         </div>
                     </div>
                 </div>
             `;
+
+      // Add event listeners to cluster feedback buttons
+      const clusterFeedbackButtons = clusterDiv.querySelectorAll(
+        '.cluster-feedback-btn'
+      );
+      clusterFeedbackButtons.forEach(button => {
+        button.addEventListener('click', e => {
+          const clusterIndex = parseInt(e.target.dataset.clusterIndex);
+          const feedback = e.target.dataset.feedback;
+          this.provideClusterFeedback(e, clusterIndex, feedback);
+        });
+      });
+
       container.appendChild(clusterDiv);
     });
   }
 
   /**
    * Provide feedback for individual search results
+   * FIXED: Now properly handles event object
    */
-  async provideFeedback(resultIndex, feedback, context = 'result') {
+  async provideFeedback(event, resultIndex, feedback, context = 'result') {
     const feedbackData = {
       result_index: resultIndex,
       feedback: feedback,
@@ -407,9 +417,11 @@ class SearchDisambiguationAPI {
 
       const result = await response.json();
 
-      // Visual feedback
-      event.target.classList.add('active');
-      setTimeout(() => event.target.classList.remove('active'), 1000);
+      // Visual feedback - now properly using the event parameter
+      if (event && event.target) {
+        event.target.classList.add('active');
+        setTimeout(() => event.target.classList.remove('active'), 1000);
+      }
 
       // Update RL status
       this.updateRLStatus(result);
@@ -424,8 +436,9 @@ class SearchDisambiguationAPI {
 
   /**
    * Provide feedback for cluster quality
+   * FIXED: Now properly handles event object
    */
-  async provideClusterFeedback(clusterIndex, feedback) {
+  async provideClusterFeedback(event, clusterIndex, feedback) {
     const feedbackData = {
       cluster_index: clusterIndex,
       feedback: feedback,
@@ -449,9 +462,11 @@ class SearchDisambiguationAPI {
 
       const result = await response.json();
 
-      // Visual feedback
-      event.target.classList.add('active');
-      setTimeout(() => event.target.classList.remove('active'), 1000);
+      // Visual feedback - now properly using the event parameter
+      if (event && event.target) {
+        event.target.classList.add('active');
+        setTimeout(() => event.target.classList.remove('active'), 1000);
+      }
 
       // Update RL status
       this.updateRLStatus(result);

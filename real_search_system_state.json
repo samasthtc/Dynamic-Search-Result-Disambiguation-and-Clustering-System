@@ -204,8 +204,423 @@
       "timestamp": "2025-06-10T00:05:29.012672",
       "num_results": 0,
       "sources": []
+    },
+    {
+      "query": "test",
+      "language": "en",
+      "timestamp": "2025-06-11T13:11:20.960691",
+      "num_results": 1,
+      "sources": [
+        "arxiv_api"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-11T13:11:51.839755",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-11T13:11:52.560682",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-11T13:12:08.124718",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-11T13:12:09.828007",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-11T13:12:17.713011",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-11T13:12:20.573249",
+      "num_results": 8,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Mercury",
+      "language": "en",
+      "timestamp": "2025-06-11T13:14:54.093273",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "en",
+      "timestamp": "2025-06-11T13:15:09.076990",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-11T13:15:12.696715",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "java",
+      "language": "ar",
+      "timestamp": "2025-06-11T13:15:30.069593",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "java",
+      "language": "en",
+      "timestamp": "2025-06-11T13:15:33.687846",
+      "num_results": 11,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-11T13:17:18.539178",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-11T13:17:20.595779",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-11T13:17:38.509230",
+      "num_results": 8,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-11T13:19:27.551469",
+      "num_results": 8,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "test",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:24.154181",
+      "num_results": 1,
+      "sources": [
+        "arxiv_api"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:29.879675",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:30.730508",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:37.545155",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:38.110875",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:41.776741",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:42.041338",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:50.540561",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:50.855267",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:54.070426",
+      "num_results": 8,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-17T10:17:54.787272",
+      "num_results": 8,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Mercury",
+      "language": "en",
+      "timestamp": "2025-06-17T16:52:59.532889",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-17T16:55:02.236698",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-17T16:55:12.336236",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-17T16:55:26.867772",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Apple",
+      "language": "en",
+      "timestamp": "2025-06-17T16:55:27.200348",
+      "num_results": 4,
+      "sources": [
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:00.642768",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "\u0628\u062d\u062b",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:11.913391",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "\u0628\u062d\u062b",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:17.810297",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "\u0628\u062d\u062b",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:18.057101",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "\u0631\u062c\u0644",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:20.557110",
+      "num_results": 0,
+      "sources": []
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:23.659439",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:24.621806",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:57:06.165484",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:57:16.018222",
+      "num_results": 3,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-17T16:57:46.715283",
+      "num_results": 1,
+      "sources": [
+        "wikipedia_main"
+      ]
+    },
+    {
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-17T16:57:49.632853",
+      "num_results": 8,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
+    },
+    {
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-17T16:57:50.454505",
+      "num_results": 8,
+      "sources": [
+        "arxiv_api",
+        "wikipedia_main",
+        "wikipedia_disambiguation"
+      ]
     }
   ],
-  "last_search_sources": [],
-  "timestamp": "2025-06-10T00:06:35.887707"
+  "last_search_sources": [
+    "arxiv_api",
+    "wikipedia_main",
+    "wikipedia_disambiguation"
+  ],
+  "timestamp": "2025-06-17T16:58:18.748961"
 }

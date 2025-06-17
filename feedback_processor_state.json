@@ -79,16 +79,296 @@
       "query": "Mercury",
       "language": "en",
       "timestamp": "2025-06-10T00:03:49.495987"
+    },
+    {
+      "cluster_index": 1,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Python",
+      "cluster_size": 4,
+      "timestamp": "2025-06-11T13:20:19.441121"
+    },
+    {
+      "cluster_index": 1,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Python",
+      "cluster_size": 4,
+      "timestamp": "2025-06-11T13:20:24.039452"
+    },
+    {
+      "cluster_index": 1,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Python",
+      "cluster_size": 4,
+      "timestamp": "2025-06-11T13:20:24.560549"
+    },
+    {
+      "cluster_index": 1,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Python",
+      "cluster_size": 4,
+      "timestamp": "2025-06-11T13:20:24.717193"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "good",
+      "context": "cluster",
+      "query": "Python",
+      "cluster_size": 4,
+      "timestamp": "2025-06-17T16:44:45.880782"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "excellent",
+      "context": "cluster",
+      "query": "Python",
+      "cluster_size": 4,
+      "timestamp": "2025-06-17T16:44:48.493737"
+    },
+    {
+      "result_index": 1,
+      "feedback": "relevant",
+      "context": "result",
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-17T16:48:31.152164"
+    },
+    {
+      "result_index": 1,
+      "feedback": "relevant",
+      "context": "result",
+      "query": "Python",
+      "language": "en",
+      "timestamp": "2025-06-17T16:48:31.326823"
+    },
+    {
+      "result_index": 0,
+      "feedback": "relevant",
+      "context": "result",
+      "query": "Mercury",
+      "language": "en",
+      "timestamp": "2025-06-17T16:54:49.277661"
+    },
+    {
+      "result_index": 0,
+      "feedback": "relevant",
+      "context": "result",
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-17T16:55:04.402558"
+    },
+    {
+      "result_index": 0,
+      "feedback": "irrelevant",
+      "context": "result",
+      "query": "Jackson",
+      "language": "en",
+      "timestamp": "2025-06-17T16:55:05.287476"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "excellent",
+      "context": "cluster",
+      "query": "Jackson",
+      "cluster_size": 1,
+      "timestamp": "2025-06-17T16:55:18.030806"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "poor",
+      "context": "cluster",
+      "query": "Jackson",
+      "cluster_size": 1,
+      "timestamp": "2025-06-17T16:55:19.995339"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "excellent",
+      "context": "cluster",
+      "query": "Jackson",
+      "cluster_size": 1,
+      "timestamp": "2025-06-17T16:55:23.285465"
+    },
+    {
+      "cluster_index": 1,
+      "feedback": "should_merge",
+      "context": "cluster",
+      "query": "Apple",
+      "cluster_size": 2,
+      "timestamp": "2025-06-17T16:55:37.417950"
+    },
+    {
+      "cluster_index": 1,
+      "feedback": "should_merge",
+      "context": "cluster",
+      "query": "Apple",
+      "cluster_size": 2,
+      "timestamp": "2025-06-17T16:55:44.056320"
+    },
+    {
+      "cluster_index": 1,
+      "feedback": "should_merge",
+      "context": "cluster",
+      "query": "Apple",
+      "cluster_size": 2,
+      "timestamp": "2025-06-17T16:55:44.377929"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_merge",
+      "context": "cluster",
+      "query": "Apple",
+      "cluster_size": 2,
+      "timestamp": "2025-06-17T16:55:45.485518"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "\u0639\u064a\u0646",
+      "cluster_size": 3,
+      "timestamp": "2025-06-17T16:56:30.090059"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "\u0639\u064a\u0646",
+      "cluster_size": 3,
+      "timestamp": "2025-06-17T16:56:30.413616"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "\u0639\u064a\u0646",
+      "cluster_size": 3,
+      "timestamp": "2025-06-17T16:56:34.785830"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "poor",
+      "context": "cluster",
+      "query": "\u0639\u064a\u0646",
+      "cluster_size": 3,
+      "timestamp": "2025-06-17T16:56:38.757759"
+    },
+    {
+      "result_index": 0,
+      "feedback": "relevant",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:45.792925"
+    },
+    {
+      "result_index": 0,
+      "feedback": "irrelevant",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:46.907603"
+    },
+    {
+      "result_index": 0,
+      "feedback": "wrong_cluster",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:48.825150"
+    },
+    {
+      "result_index": 1,
+      "feedback": "wrong_cluster",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:51.134955"
+    },
+    {
+      "result_index": 0,
+      "feedback": "wrong_cluster",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:54.408244"
+    },
+    {
+      "result_index": 0,
+      "feedback": "wrong_cluster",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:54.938660"
+    },
+    {
+      "result_index": 0,
+      "feedback": "wrong_cluster",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:55.001641"
+    },
+    {
+      "result_index": 0,
+      "feedback": "relevant",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:56.899722"
+    },
+    {
+      "result_index": 2,
+      "feedback": "wrong_cluster",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:59.408722"
+    },
+    {
+      "result_index": 2,
+      "feedback": "irrelevant",
+      "context": "result",
+      "query": "\u0639\u064a\u0646",
+      "language": "ar",
+      "timestamp": "2025-06-17T16:56:59.988787"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Python",
+      "cluster_size": 4,
+      "timestamp": "2025-06-17T16:58:14.914998"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Python",
+      "cluster_size": 4,
+      "timestamp": "2025-06-17T16:58:14.963290"
+    },
+    {
+      "cluster_index": 0,
+      "feedback": "should_split",
+      "context": "cluster",
+      "query": "Python",
+      "cluster_size": 4,
+      "timestamp": "2025-06-17T16:58:14.976283"
     }
   ],
   "cluster_feedback": {},
   "action_rewards": {},
   "optimization_stats": {
-    "merge_attempts": 3,
-    "split_attempts": 11,
-    "rebalance_attempts": 0,
-    "total_rewards": -9.372,
-    "episodes": 10
+    "merge_attempts": 50,
+    "split_attempts": 56,
+    "rebalance_attempts": 9,
+    "total_rewards": -18.216,
+    "episodes": 45
   },
   "satisfaction_history": [
     0.5,
@@ -100,7 +380,42 @@
     0.5,
     0.5,
     0.5,
-    0.1
+    0.1,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.8,
+    1.0,
+    0.7,
+    0.7,
+    0.7,
+    0.7,
+    0.1,
+    1.0,
+    0.2,
+    1.0,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.2,
+    0.7,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.7,
+    0.1,
+    0.1,
+    0.5,
+    0.5,
+    0.5
   ],
-  "timestamp": "2025-06-10T00:06:35.884856"
+  "timestamp": "2025-06-17T16:58:18.745840"
 }
