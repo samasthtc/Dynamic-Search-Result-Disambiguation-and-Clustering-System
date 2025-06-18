@@ -1,8 +1,3 @@
-/**
- * Dynamic Search Result Disambiguation System
- * Frontend JavaScript Application - FIXED VERSION (Event Listeners)
- */
-
 class SearchDisambiguationAPI {
   constructor() {
     this.baseURL = 'http://localhost:5000/api';
@@ -14,11 +9,9 @@ class SearchDisambiguationAPI {
     this.initializeEventListeners();
     this.loadInitialMetrics();
     this.setupPeriodicUpdates();
+    this.addSampleQueryButtons();
   }
 
-  /**
-   * Initialize all event listeners for the interface
-   */
   initializeEventListeners() {
     // Search functionality
     document
@@ -31,6 +24,7 @@ class SearchDisambiguationAPI {
     // Language selection
     document.getElementById('languageSelect').addEventListener('change', e => {
       this.currentLanguage = e.target.value;
+      this.updateLanguageInterface();
     });
 
     // Clustering controls
@@ -44,67 +38,59 @@ class SearchDisambiguationAPI {
     document
       .getElementById('ensembleBtn')
       .addEventListener('click', () => this.performEnsembleClustering());
-
-    // Add sample query buttons
-    this.addSampleQueryButtons();
   }
 
-  /**
-   * Add sample query buttons for quick testing
-   */
   addSampleQueryButtons() {
     const sampleQueries = [
       { query: 'Jackson', desc: 'Person/Place ambiguity' },
       { query: 'Apple', desc: 'Company/Fruit ambiguity' },
       { query: 'Python', desc: 'Programming/Animal ambiguity' },
       { query: 'Mercury', desc: 'Planet/Element ambiguity' },
+      { query: 'عين', desc: 'Arabic: Eye' },
+      { query: 'تفاحة', desc: 'Arabic: Apple' },
     ];
 
-    const searchInput = document.getElementById('searchInput');
+    const searchContainer = document.querySelector('.search-container');
 
-    // Create sample buttons container
+    // Add sample buttons below search
     const samplesDiv = document.createElement('div');
-    samplesDiv.style.cssText =
-      'margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;';
+    samplesDiv.className = 'sample-queries';
 
     sampleQueries.forEach(sample => {
       const btn = document.createElement('button');
       btn.textContent = `Try "${sample.query}"`;
       btn.title = sample.desc;
-      btn.style.cssText = `
-                padding: 8px 16px; 
-                background: #f1f5f9; 
-                border: 1px solid #e2e8f0; 
-                border-radius: 20px; 
-                cursor: pointer;
-                font-size: 13px;
-                transition: all 0.2s ease;
-            `;
+      btn.className = 'sample-btn';
 
       btn.addEventListener('click', () => {
-        searchInput.value = sample.query;
+        document.getElementById('searchInput').value = sample.query;
         this.performSearch();
-      });
-
-      btn.addEventListener('mouseenter', () => {
-        btn.style.background = '#6366f1';
-        btn.style.color = 'white';
-      });
-
-      btn.addEventListener('mouseleave', () => {
-        btn.style.background = '#f1f5f9';
-        btn.style.color = 'inherit';
       });
 
       samplesDiv.appendChild(btn);
     });
 
-    searchInput.parentNode.insertBefore(samplesDiv, searchInput.nextSibling);
+    searchContainer.parentNode.insertBefore(
+      samplesDiv,
+      searchContainer.nextSibling
+    );
   }
 
-  /**
-   * Perform search with the current query
-   */
+  updateLanguageInterface() {
+    const container = document.querySelector('.main-content');
+    const searchInput = document.getElementById('searchInput');
+
+    if (this.currentLanguage === 'ar') {
+      // container.classList.add('arabic-support');
+      searchInput.placeholder =
+        'أدخل استعلام البحث الغامض (مثل: "جاكسون"، "تفاحة"، "بايثون")...';
+    } else {
+      container.classList.remove('arabic-support');
+      searchInput.placeholder =
+        'Enter ambiguous search query (e.g., "Jackson", "Apple", "Python")...';
+    }
+  }
+
   async performSearch() {
     const query = document.getElementById('searchInput').value.trim();
     if (!query) {
@@ -124,7 +110,7 @@ class SearchDisambiguationAPI {
         body: JSON.stringify({
           query: query,
           language: this.currentLanguage,
-          num_results: 20,
+          num_results: 10,
         }),
       });
 
@@ -152,9 +138,6 @@ class SearchDisambiguationAPI {
     }
   }
 
-  /**
-   * Perform clustering on current results
-   */
   async performClustering() {
     if (this.currentResults.length === 0) return;
 
@@ -192,9 +175,6 @@ class SearchDisambiguationAPI {
     }
   }
 
-  /**
-   * Perform ensemble clustering using multiple algorithms
-   */
   async performEnsembleClustering() {
     if (this.currentResults.length === 0) {
       this.showMessage('Please perform a search first', 'error');
@@ -244,9 +224,6 @@ class SearchDisambiguationAPI {
     }
   }
 
-  /**
-   * Re-cluster results with updated parameters
-   */
   async reclusterResults() {
     if (this.currentResults.length === 0) {
       this.showMessage('Please perform a search first', 'error');
@@ -263,9 +240,6 @@ class SearchDisambiguationAPI {
     await this.performClustering();
   }
 
-  /**
-   * Show loading state in both result panels
-   */
   showLoading() {
     document.getElementById('originalResults').innerHTML = `
             <div class="loading">
@@ -282,9 +256,6 @@ class SearchDisambiguationAPI {
         `;
   }
 
-  /**
-   * Display original search results
-   */
   displayOriginalResults() {
     const container = document.getElementById('originalResults');
     container.innerHTML = '';
@@ -303,31 +274,16 @@ class SearchDisambiguationAPI {
                 <div class="feedback-section">
                     <strong>Rate this result:</strong>
                     <div class="feedback-buttons">
-                        <button class="feedback-btn" data-index="${index}" data-feedback="relevant" data-context="result">👍 Relevant</button>
-                        <button class="feedback-btn" data-index="${index}" data-feedback="irrelevant" data-context="result">👎 Irrelevant</button>
-                        <button class="feedback-btn" data-index="${index}" data-feedback="wrong_cluster" data-context="result">🔄 Wrong Cluster</button>
+                        <button class="feedback-btn" onclick="api.provideFeedback(event, ${index}, 'relevant', 'result')">👍 Relevant</button>
+                        <button class="feedback-btn" onclick="api.provideFeedback(event, ${index}, 'irrelevant', 'result')">👎 Irrelevant</button>
+                        <button class="feedback-btn" onclick="api.provideFeedback(event, ${index}, 'wrong_cluster', 'result')">🔄 Wrong Cluster</button>
                     </div>
                 </div>
             `;
-
-      // Add event listeners to feedback buttons
-      const feedbackButtons = resultDiv.querySelectorAll('.feedback-btn');
-      feedbackButtons.forEach(button => {
-        button.addEventListener('click', e => {
-          const index = parseInt(e.target.dataset.index);
-          const feedback = e.target.dataset.feedback;
-          const context = e.target.dataset.context;
-          this.provideFeedback(e, index, feedback, context);
-        });
-      });
-
       container.appendChild(resultDiv);
     });
   }
 
-  /**
-   * Display clustered results
-   */
   displayClusteredResults() {
     const container = document.getElementById('clusteredResults');
     container.innerHTML = '';
@@ -363,36 +319,19 @@ class SearchDisambiguationAPI {
                     <div class="feedback-section">
                         <strong>Rate this cluster:</strong>
                         <div class="feedback-buttons">
-                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="excellent">⭐ Excellent</button>
-                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="good">👍 Good</button>
-                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="poor">👎 Poor</button>
-                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="should_split">✂️ Split</button>
-                            <button class="feedback-btn" data-cluster-index="${clusterIndex}" data-feedback="should_merge">🔗 Merge</button>
+                            <button class="feedback-btn" onclick="api.provideClusterFeedback(event, ${clusterIndex}, 'excellent')">⭐ Excellent</button>
+                            <button class="feedback-btn" onclick="api.provideClusterFeedback(event, ${clusterIndex}, 'good')">👍 Good</button>
+                            <button class="feedback-btn" onclick="api.provideClusterFeedback(event, ${clusterIndex}, 'poor')">👎 Poor</button>
+                            <button class="feedback-btn" onclick="api.provideClusterFeedback(event, ${clusterIndex}, 'should_split')">✂️ Split</button>
+                            <button class="feedback-btn" onclick="api.provideClusterFeedback(event, ${clusterIndex}, 'should_merge')">🔗 Merge</button>
                         </div>
                     </div>
                 </div>
             `;
-
-      // Add event listeners to cluster feedback buttons
-      const clusterFeedbackButtons = clusterDiv.querySelectorAll(
-        '.cluster-feedback-btn'
-      );
-      clusterFeedbackButtons.forEach(button => {
-        button.addEventListener('click', e => {
-          const clusterIndex = parseInt(e.target.dataset.clusterIndex);
-          const feedback = e.target.dataset.feedback;
-          this.provideClusterFeedback(e, clusterIndex, feedback);
-        });
-      });
-
       container.appendChild(clusterDiv);
     });
   }
 
-  /**
-   * Provide feedback for individual search results
-   * FIXED: Now properly handles event object
-   */
   async provideFeedback(event, resultIndex, feedback, context = 'result') {
     const feedbackData = {
       result_index: resultIndex,
@@ -417,11 +356,9 @@ class SearchDisambiguationAPI {
 
       const result = await response.json();
 
-      // Visual feedback - now properly using the event parameter
-      if (event && event.target) {
-        event.target.classList.add('active');
-        setTimeout(() => event.target.classList.remove('active'), 1000);
-      }
+      // Visual feedback
+      event.target.classList.add('active');
+      setTimeout(() => event.target.classList.remove('active'), 1000);
 
       // Update RL status
       this.updateRLStatus(result);
@@ -434,10 +371,6 @@ class SearchDisambiguationAPI {
     }
   }
 
-  /**
-   * Provide feedback for cluster quality
-   * FIXED: Now properly handles event object
-   */
   async provideClusterFeedback(event, clusterIndex, feedback) {
     const feedbackData = {
       cluster_index: clusterIndex,
@@ -462,11 +395,9 @@ class SearchDisambiguationAPI {
 
       const result = await response.json();
 
-      // Visual feedback - now properly using the event parameter
-      if (event && event.target) {
-        event.target.classList.add('active');
-        setTimeout(() => event.target.classList.remove('active'), 1000);
-      }
+      // Visual feedback
+      event.target.classList.add('active');
+      setTimeout(() => event.target.classList.remove('active'), 1000);
 
       // Update RL status
       this.updateRLStatus(result);
@@ -479,9 +410,6 @@ class SearchDisambiguationAPI {
     }
   }
 
-  /**
-   * Update RL agent status display
-   */
   updateRLStatus(result) {
     document.getElementById('episodes').textContent =
       result.total_episodes || 0;
@@ -504,9 +432,6 @@ class SearchDisambiguationAPI {
     document.getElementById('rlStatus').textContent = randomStatus;
   }
 
-  /**
-   * Update performance metrics display
-   */
   async updateMetrics() {
     try {
       const response = await fetch(`${this.baseURL}/metrics`);
@@ -524,7 +449,7 @@ class SearchDisambiguationAPI {
         metrics.silhouette_score || 0
       ).toFixed(2);
       document.getElementById('userSatisfaction').textContent =
-        (metrics.user_satisfaction_pct || 0) + '%';
+        (metrics.user_satisfaction_pct.toFixed(2) || 0) + '%';
       document.getElementById('totalQueries').textContent =
         metrics.total_queries || 0;
       document.getElementById('feedbackItems').textContent =
@@ -534,16 +459,10 @@ class SearchDisambiguationAPI {
     }
   }
 
-  /**
-   * Load initial metrics on page load
-   */
   async loadInitialMetrics() {
     await this.updateMetrics();
   }
 
-  /**
-   * Setup periodic updates for metrics
-   */
   setupPeriodicUpdates() {
     // Update metrics every 30 seconds
     setInterval(() => {
@@ -551,9 +470,6 @@ class SearchDisambiguationAPI {
     }, 30000);
   }
 
-  /**
-   * Show user messages (success/error)
-   */
   showMessage(message, type = 'info') {
     // Remove existing messages
     const existingMessages = document.querySelectorAll(
@@ -575,9 +491,6 @@ class SearchDisambiguationAPI {
     }, 5000);
   }
 
-  /**
-   * Escape HTML to prevent XSS
-   */
   escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
@@ -585,16 +498,13 @@ class SearchDisambiguationAPI {
   }
 }
 
-// Initialize the application when DOM is loaded
-document.addEventListener('DOMContentLoaded', function () {
-  // Initialize the main API class
-  const api = new SearchDisambiguationAPI();
+// Initialize the application
+const api = new SearchDisambiguationAPI();
 
-  // Make API instance globally available for onclick handlers
-  window.api = api;
+// Make API instance globally available for onclick handlers
+window.api = api;
 
-  // Set initial sample query
+// Set initial sample query
+document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('searchInput').value = 'Jackson';
-
-  console.log('Search Disambiguation System initialized successfully');
 });

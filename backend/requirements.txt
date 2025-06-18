@@ -1,0 +1,46 @@
+# Core web framework
+flask==3.0.3
+flask-cors==6.0.0
+
+# Machine Learning and NLP
+scikit-learn==1.3.0
+numpy==1.24.3
+pandas==2.0.3
+
+# Advanced clustering algorithms
+hdbscan==0.8.40
+bertopic==0.17.0
+umap-learn==0.5.7
+
+# Sentence transformers for embeddings
+sentence-transformers==4.1.0
+transformers==4.43.4
+torch==2.7.1
+
+# Arabic processing
+pyarabic==0.6.15
+
+# Text processing
+nltk==3.8.1
+beautifulsoup4==4.13.4
+
+# HTTP requests
+requests==2.32.4
+
+# Wikipedia API
+wikipedia-api==0.8.1
+
+# Real datasets access
+datasets==3.6.0
+huggingface-hub==0.33.0
+
+# TREC dataset access (optional)
+ir-datasets
+
+# Data handling
+scipy==1.15.3
+joblib==1.3.2
+
+# Utilities
+tqdm==4.67.1
+python-dateutil==2.9.0.post0

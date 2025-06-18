@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Search Result Disambiguation System</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔍 Dynamic Search Disambiguation</h1>
+        <p>AI-Powered Search Result Clustering with Reinforcement Learning</p>
+      </div>
+
+      <div class="main-content">
+        <div class="search-section">
+          <div class="search-container">
+            <input type="text" id="searchInput" class="search-input"
+              placeholder="Enter ambiguous search query (e.g., 'Jackson', 'Apple', 'Python')...">
+            <select id="languageSelect" class="language-selector">
+              <option value="en">🇺🇸 English</option>
+              <option value="ar">🇸🇦 العربية</option>
+            </select>
+            <button id="searchBtn" class="search-btn">🔍 Search</button>
+          </div>
+
+          <div class="control-panel">
+            <div class="control-row">
+              <span class="control-label">📊 Clusters:</span>
+              <input type="range" id="clusterSlider"
+                class="slider" min="2" max="8" value="4">
+              <span id="clusterValue"
+                style="font-weight: 600; color: #6366f1;">4</span>
+              <button id="reclusterBtn" class="cluster-btn">🔄
+                Re-cluster</button>
+            </div>
+            <div class="control-row">
+              <span class="control-label">🤖 Algorithm:</span>
+              <select id="algorithmSelect" class="algorithm-selector">
+                <option value="adaptive">🧠 Adaptive (AI-Selected)</option>
+                <option value="kmeans" selected>⭕ K-Means</option>
+                <option value="hdbscan">🌐 HDBSCAN</option>
+                <option value="bertopic">📝 BERTopic</option>
+                <option value="gaussian_mixture">📈 Gaussian Mixture</option>
+                <option value="hierarchical">🌳 Hierarchical</option>
+              </select>
+              <span style="font-size: 0.9em; color: #64748b;">Auto-optimized
+                parameters</span>
+              <button id="ensembleBtn" class="cluster-btn">🎯 Ensemble</button>
+            </div>
+          </div>
+
+          <div class="status-panel">
+            <div class="status-content">
+              <strong>🤖 Reinforcement Learning Agent Status</strong>
+              <div class="status-grid">
+                <div class="status-item">
+                  <div class="status-value" id="episodes">0</div>
+                  <div class="status-label">Training Episodes</div>
+                </div>
+                <div class="status-item">
+                  <div class="status-value" id="totalReward">0.0</div>
+                  <div class="status-label">Total Reward</div>
+                </div>
+                <div class="status-item">
+                  <div class="status-value" id="explorationRate">80%</div>
+                  <div class="status-label">Exploration Rate</div>
+                </div>
+                <div class="status-item">
+                  <div class="status-value" id="rlStatus">Ready</div>
+                  <div class="status-label">Agent Status</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="metrics-panel">
+          <h3>📈 Real-time Performance Metrics</h3>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <div class="metric-value" id="purityScore">--</div>
+              <div class="metric-label">Cluster Purity</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value" id="randIndex">--</div>
+              <div class="metric-label">Adjusted Rand Index</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value" id="silhouetteScore">--</div>
+              <div class="metric-label">Silhouette Score</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value" id="userSatisfaction">--</div>
+              <div class="metric-label">User Satisfaction</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value" id="totalQueries">0</div>
+              <div class="metric-label">Total Queries</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value" id="feedbackItems">0</div>
+              <div class="metric-label">Feedback Items</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-section">
+          <div class="results-panel">
+            <h3 class="panel-title">🔍 Original Search Results</h3>
+            <div id="originalResults">
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Enter a search query to see results...</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="results-panel">
+            <h3 class="panel-title">🎯 AI-Clustered Results</h3>
+            <div id="clusteredResults">
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Clustering will appear after search...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+  </body>
+</html>
